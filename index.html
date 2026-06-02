@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>homefolk · build a tiny village in Hackney</title>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet" />
+
+<!-- Leaflet -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- Mapillary (street view) -->
+<link rel="stylesheet" href="https://unpkg.com/mapillary-js@4.1.2/dist/mapillary.css" />
+<script src="https://unpkg.com/mapillary-js@4.1.2/dist/mapillary.js"></script>
+
+<style>
+/* ============================================================== *
+ *  1. BRAND TOKENS  (extracted from LIVE PROJECT 2024 PDF)        *
+ * ============================================================== */
+:root{
+  --green:#7AB35B;   --green-d:#5f9544;
+  --sage:#CFE0BD;    --sage-l:#E4EFD8;
+  --coral:#EE8259;   --coral-d:#d86a42;
+  --maroon:#6B3A2E;
+  --sky:#7FB6D8;
+  --ink:#1F1F1F;     --ink-soft:#54534f;
+  --paper:#FFFFFF;   --line:#e7e7e2;
+  --shadow:0 10px 30px rgba(31,31,31,.12);
+  font-family:'Poppins',system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;color:var(--ink);background:var(--paper)}
+body{overflow:hidden}
+button{font-family:inherit}
+.hidden{display:none !important}
+
+/* ---- shared: angled green banner + A-frame logo ---- */
+.banner{
+  position:relative;height:74px;background:var(--green);color:#fff;
+  display:flex;align-items:center;padding:0 26px;flex:0 0 auto;z-index:600;
+  clip-path:polygon(0 0,100% 0,100% 100%,0 76%);
+}
+.banner .title{margin-left:auto;font-weight:700;font-size:26px;letter-spacing:.2px;
+  text-transform:lowercase;padding-bottom:6px}
+.logo{display:inline-flex;align-items:flex-end;gap:0;width:46px;height:40px;position:relative}
+.logo svg{width:46px;height:40px;overflow:visible}
+.banner .logo-wrap{background:#fff;border-radius:8px;padding:7px 9px 5px;display:flex;
+  box-shadow:0 3px 10px rgba(0,0,0,.12);margin-bottom:4px}
+
+/* ---- buttons ---- */
+.btn{border:none;border-radius:999px;padding:13px 26px;font-weight:600;font-size:15px;
+  cursor:pointer;transition:transform .08s ease,box-shadow .15s ease,background .15s}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--coral);color:#fff;box-shadow:0 6px 16px rgba(238,130,89,.4)}
+.btn-primary:hover{background:var(--coral-d)}
+.btn-ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn-ghost:hover{border-color:var(--green);color:var(--green-d)}
+.btn-sm{padding:8px 14px;font-size:13px}
+
+/* screen container */
+#app{height:100vh;display:flex;flex-direction:column}
+.screen{flex:1;min-height:0;display:none;flex-direction:column}
+.screen.active{display:flex}
+
+/* ============================================================== *
+ *  2. LANDING                                                    *
+ * ============================================================== */
+#landing{background:
+   radial-gradient(1200px 500px at 80% -10%,var(--sage-l),transparent 60%),
+   radial-gradient(900px 500px at -5% 110%,var(--sage-l),transparent 55%),
+   var(--paper);
+  align-items:center;justify-content:center;position:relative;overflow:auto}
+.land-card{max-width:760px;text-align:center;padding:40px 30px}
+.land-logo{display:flex;justify-content:center;align-items:flex-end;gap:18px;margin-bottom:6px}
+.land-logo svg{width:96px;height:84px;overflow:visible}
+.brandword{font-size:58px;font-weight:800;letter-spacing:-1px;line-height:1}
+.brandword b{color:var(--ink)} .brandword .k{color:var(--coral)}
+.tagline{font-size:20px;margin:14px 0 2px;font-weight:600}
+.tagline .c{color:var(--coral)} .tagline .g{color:var(--green-d)} .tagline .s{color:var(--sky)}
+.subtag{color:var(--ink-soft);font-style:italic;font-size:16px;max-width:540px;margin:10px auto 0}
+.stat{display:inline-flex;align-items:center;gap:10px;border:2px solid var(--green);
+  border-radius:14px;padding:12px 18px;margin:26px 0 6px;background:#fff}
+.stat .num{font-size:30px;font-weight:800;color:var(--ink)}
+.stat .lbl{text-align:left;font-size:13px;color:var(--ink-soft);max-width:200px;line-height:1.25}
+.land-actions{margin-top:26px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.land-foot{position:absolute;bottom:14px;font-size:11px;color:var(--ink-soft);width:100%;text-align:center}
+
+/* ============================================================== *
+ *  3. MAP                                                        *
+ * ============================================================== */
+#map-screen{position:relative}
+#map{position:absolute;inset:74px 0 0 0}
+.leaflet-container{background:#dfe6d9}
+
+/* pod tray */
+.tray{position:absolute;top:92px;left:16px;z-index:610;width:230px;background:#fff;
+  border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+.tray h3{margin:0;padding:13px 16px 4px;font-size:15px}
+.tray p{margin:0;padding:0 16px 12px;font-size:12px;color:var(--ink-soft);line-height:1.4}
+.pod-chip{margin:0 14px 14px;border:2px dashed var(--coral);border-radius:14px;
+  background:var(--sage-l);padding:14px;display:flex;align-items:center;gap:12px;
+  cursor:grab;user-select:none;transition:background .15s}
+.pod-chip:hover{background:#fff}
+.pod-chip:active{cursor:grabbing}
+.pod-chip .ico{font-size:30px;line-height:1}
+.pod-chip .t{font-weight:700;font-size:14px}
+.pod-chip .d{font-size:11px;color:var(--ink-soft)}
+.tray .village{border-top:1px solid var(--line);padding:11px 16px;font-size:12px;color:var(--ink-soft)}
+.tray .village b{color:var(--ink);font-size:14px}
+
+/* legend */
+.legend{position:absolute;bottom:18px;left:16px;z-index:610;background:#fff;border-radius:14px;
+  box-shadow:var(--shadow);padding:12px 14px;font-size:12px;max-width:230px}
+.legend h4{margin:0 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-soft)}
+.legend .row{display:flex;align-items:center;gap:9px;margin:5px 0}
+.legend .sw{width:16px;height:16px;border-radius:4px;flex:0 0 auto;opacity:.85}
+.legend .cnt{margin-left:auto;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+
+/* map overlay (loading / error) */
+.map-overlay{position:absolute;inset:74px 0 0 0;z-index:620;background:rgba(255,255,255,.82);
+  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;text-align:center}
+.spinner{width:42px;height:42px;border-radius:50%;border:4px solid var(--sage);
+  border-top-color:var(--green);animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* toast */
+#toast{position:absolute;left:50%;bottom:30px;transform:translateX(-50%) translateY(20px);
+  z-index:700;background:var(--ink);color:#fff;padding:12px 20px;border-radius:999px;
+  font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:.25s;white-space:nowrap}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* pod marker */
+.pod-marker{font-size:26px;filter:drop-shadow(0 4px 5px rgba(0,0,0,.35));cursor:pointer;
+  transition:transform .12s}
+.pod-marker:hover{transform:scale(1.18)}
+
+/* hint button bottom-right */
+.map-hint{position:absolute;right:16px;bottom:18px;z-index:610;background:#fff;border-radius:12px;
+  box-shadow:var(--shadow);padding:10px 14px;font-size:12px;color:var(--ink-soft);max-width:240px}
+.map-hint b{color:var(--ink)}
+
+/* ============================================================== *
+ *  4. STUDIO                                                     *
+ * ============================================================== */
+#studio{background:#f4f6f1}
+.studio-body{flex:1;min-height:0;display:flex}
+.studio-left{flex:1.25;min-width:0;position:relative;display:flex;flex-direction:column;background:#eef1ea}
+#three-host{flex:1;min-height:0;position:relative}
+#three-host canvas{display:block}
+.studio-right{flex:1;min-width:0;border-left:1px solid var(--line);display:flex;flex-direction:column;background:#000;transition:flex-grow .25s ease,flex-basis .25s ease}
+.right-head{background:#fff;padding:10px 16px;font-size:13px;display:flex;align-items:center;gap:10px;flex:0 0 auto}
+.collapse-btn{flex:0 0 auto;border:none;background:transparent;cursor:pointer;font-size:20px;line-height:1;
+  color:var(--ink-soft);padding:2px 8px;border-radius:8px;transition:background .15s,color .15s}
+.collapse-btn:hover{background:var(--sage-l);color:var(--green-d)}
+/* collapsed: panel shrinks to a thin spine; only the toggle + a vertical label remain */
+.studio-right.collapsed{flex:0 0 44px}
+.studio-right.collapsed #mly{display:none}
+.studio-right.collapsed .right-head{flex-direction:column;align-items:center;gap:14px;height:100%;padding:10px 0;justify-content:flex-start}
+.studio-right.collapsed .right-head .dot,
+.studio-right.collapsed .right-head .tokbar{display:none}
+.studio-right.collapsed #mly-loc{writing-mode:vertical-rl;text-orientation:mixed;color:var(--ink-soft);font-weight:600;white-space:nowrap}
+.right-head .dot{width:9px;height:9px;border-radius:50%;background:var(--green)}
+#mly{flex:1;min-height:0;position:relative;background:#11140f}
+.mly-empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:12px;text-align:center;color:#fff;background:var(--sage);padding:26px}
+.mly-empty .big{font-size:40px}
+.mly-empty p{max-width:280px;color:#3c4a30;font-weight:600}
+
+/* controls panel over 3D */
+.controls{position:absolute;top:14px;left:14px;right:14px;z-index:5;display:flex;gap:10px;
+  flex-wrap:wrap;align-items:flex-start;pointer-events:none}
+.panel{background:rgba(255,255,255,.95);border-radius:14px;box-shadow:var(--shadow);
+  padding:11px 13px;pointer-events:auto;backdrop-filter:blur(4px)}
+.panel h4{margin:0 0 8px;font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--ink-soft)}
+.swatches{display:flex;gap:7px}
+.swatches .sw{width:24px;height:24px;border-radius:7px;border:2px solid #fff;
+  box-shadow:0 0 0 1px var(--line);cursor:pointer}
+.swatches .sw.active{box-shadow:0 0 0 2px var(--ink)}
+.surf-tabs{display:flex;gap:5px;margin-bottom:8px}
+.surf-tabs button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:4px 9px;
+  font-size:12px;cursor:pointer}
+.surf-tabs button.active{background:var(--green);color:#fff;border-color:var(--green)}
+
+.furn-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-width:240px}
+.furn-grid button{border:1px solid var(--line);background:var(--sage-l);border-radius:10px;padding:9px 4px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.12s}
+.furn-grid button:hover{border-color:var(--coral);background:#fff;transform:translateY(-1px)}
+.furn-grid .nm{font-size:11px;font-weight:600;color:var(--ink);line-height:1;text-align:center}
+
+/* selected-furniture toolbar (bottom center of 3D) */
+.sel-bar{position:absolute;bottom:46px;left:50%;transform:translateX(-50%);z-index:6;
+  background:rgba(31,31,31,.92);border-radius:999px;padding:7px 10px;display:flex;gap:7px;align-items:center;
+  pointer-events:auto}
+.sel-bar.hidden{display:none}
+.sel-bar button{border:none;background:#3a3a37;color:#fff;border-radius:999px;width:34px;height:34px;
+  font-size:15px;cursor:pointer}
+.sel-bar button:hover{background:var(--coral)}
+.sel-bar .lbl{color:#fff;font-size:12px;padding:0 8px;font-weight:600}
+
+.studio-foot{flex:0 0 auto;background:#fff;border-top:1px solid var(--line);padding:6px 16px;
+  font-size:10.5px;color:var(--ink-soft);display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.studio-foot a{color:var(--green-d)}
+.studio-hint{position:absolute;bottom:10px;left:14px;z-index:5;font-size:11px;color:var(--ink-soft);
+  background:rgba(255,255,255,.85);padding:5px 10px;border-radius:8px;pointer-events:none}
+
+/* settings (mapillary token) */
+.tokbar{display:flex;align-items:center;gap:6px;margin-left:auto}
+.tokbar input{border:1px solid var(--line);border-radius:7px;padding:5px 8px;font-size:11px;width:120px;
+  font-family:monospace}
+.loading-art{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.6);z-index:7;font-size:13px;color:var(--ink-soft)}
+</style>
+</head>
+<body>
+
+<!-- reusable A-frame logo (sky / maroon / coral bars forming a tent) -->
+<svg width="0" height="0" style="position:absolute"><defs>
+  <g id="aframe">
+    <rect x="2"  y="6"  width="7" height="44" rx="3" transform="rotate(24 5 28)"  fill="#7FB6D8"/>
+    <rect x="30" y="6"  width="7" height="44" rx="3" transform="rotate(-24 33 28)" fill="#6B3A2E"/>
+    <rect x="0"  y="48" width="46" height="7" rx="3" fill="#EE8259"/>
+  </g>
+  <symbol id="podglyph" viewBox="0 0 48 44">
+    <rect x="8" y="20" width="32" height="18" rx="2" fill="#EE8259"/>
+    <path d="M5 21 L24 7 L43 21 Z" fill="#EE8259" stroke="#6B3A2E" stroke-width="2.5" stroke-linejoin="round"/>
+    <rect x="20" y="25" width="9" height="13" rx="1" fill="#fff"/>
+    <circle cx="15" cy="40" r="3.2" fill="#1F1F1F"/>
+    <circle cx="33" cy="40" r="3.2" fill="#1F1F1F"/>
+  </symbol>
+  <symbol id="pinglyph" viewBox="0 0 24 24">
+    <path d="M12 2C7.6 2 4 5.5 4 9.8 4 15 12 22 12 22s8-7 8-12.2C20 5.5 16.4 2 12 2z" fill="#7AB35B"/>
+    <circle cx="12" cy="9.8" r="3.2" fill="#fff"/>
+  </symbol>
+</defs></svg>
+
+<div id="app">
+
+  <!-- ===================== LANDING ===================== -->
+  <section id="landing" class="screen active">
+    <div class="land-card">
+      <div class="land-logo">
+        <svg viewBox="0 0 46 56"><use href="#aframe"/></svg>
+        <div class="brandword"><b>homefol</b><span class="k">k</span></div>
+      </div>
+      <div class="tagline"><span class="c">community</span>-owned tinyhouse villages <br/>for <span class="g">eco</span><span class="s">health</span></div>
+      <p class="subtag">homefolk activates underused, light-touch sites — disused car parks, garage courts, brownfield &amp; vacant plots — turning them into close-knit tiny-home villages. Build one in Hackney.</p>
+      <div class="stat">
+        <div class="num">24%</div>
+        <div class="lbl">of people in London experience poverty after they've paid for housing.</div>
+      </div>
+      <div class="land-actions">
+        <button class="btn btn-primary" id="start-btn">Start building in Hackney →</button>
+      </div>
+    </div>
+    <div class="land-foot">A concept demo for community testers · data: OpenStreetMap, Mapillary, Quaternius (CC0), Art Institute of Chicago</div>
+  </section>
+
+  <!-- ===================== MAP ===================== -->
+  <section id="map-screen" class="screen">
+    <div class="banner">
+      <div class="logo-wrap"><svg class="logo" viewBox="0 0 46 56"><use href="#aframe"/></svg></div>
+      <div class="title">build a village</div>
+    </div>
+    <div id="map"></div>
+
+    <div class="tray">
+      <h3>Drag a tiny-home onto a site</h3>
+      <p>homefolk only builds on <b>underused</b> land. Drag the pod onto a highlighted plot.</p>
+      <div class="pod-chip" id="pod-chip" draggable="true">
+        <div class="ico"><svg viewBox="0 0 48 44" width="36" height="33"><use href="#podglyph"/></svg></div>
+        <div><div class="t">Tiny-home pod</div><div class="d">drag me to the map</div></div>
+      </div>
+      <div class="village">Village: <b id="pod-count">0</b> pods placed</div>
+    </div>
+
+    <div class="legend" id="legend">
+      <h4>Underused sites</h4>
+      <div class="row"><span class="sw" style="background:var(--sky)"></span>Car park / greyfield<span class="cnt" id="c-parking">–</span></div>
+      <div class="row"><span class="sw" style="background:var(--maroon)"></span>Brownfield<span class="cnt" id="c-brownfield">–</span></div>
+      <div class="row"><span class="sw" style="background:var(--coral)"></span>Garages<span class="cnt" id="c-garages">–</span></div>
+      <div class="row"><span class="sw" style="background:var(--green)"></span>Unused construction<span class="cnt" id="c-construction">–</span></div>
+    </div>
+
+    <div class="map-hint"><b>Tip:</b> drop several pods to grow a village, then click a pod to step inside &amp; customise it.</div>
+
+    <div class="map-overlay" id="map-overlay">
+      <div class="spinner"></div>
+      <div id="map-overlay-text"><b>Finding underused sites in Hackney…</b><br/><span style="color:var(--ink-soft);font-size:13px">querying OpenStreetMap</span></div>
+    </div>
+  </section>
+
+  <!-- ===================== STUDIO ===================== -->
+  <section id="studio" class="screen">
+    <div class="banner">
+      <div class="logo-wrap"><svg class="logo" viewBox="0 0 46 56"><use href="#aframe"/></svg></div>
+      <button class="btn btn-ghost btn-sm" id="back-btn" style="margin-left:18px;background:#fff">← back to map</button>
+      <div class="title">the studio</div>
+    </div>
+
+    <div class="studio-body">
+      <!-- LEFT: 3D interior -->
+      <div class="studio-left">
+        <div id="three-host">
+          <div class="controls">
+            <div class="panel">
+              <h4>Surfaces</h4>
+              <div class="surf-tabs" id="surf-tabs">
+                <button data-surf="wall" class="active">Walls</button>
+                <button data-surf="floor">Floor</button>
+                <button data-surf="roof">Roof</button>
+              </div>
+              <div class="swatches" id="surf-swatches"></div>
+            </div>
+            <div class="panel">
+              <h4>Furniture · Quaternius (CC0)</h4>
+              <div class="furn-grid" id="furn-grid"></div>
+            </div>
+            <div class="panel">
+              <h4>Wall art · public domain</h4>
+              <button class="btn btn-ghost btn-sm" id="art-btn">Hang a painting</button>
+              <button class="btn btn-ghost btn-sm" id="art-shuffle" style="margin-top:6px">Shuffle</button>
+              <div id="art-cap" style="font-size:10px;color:var(--ink-soft);margin-top:6px;max-width:150px"></div>
+            </div>
+          </div>
+          <div class="sel-bar hidden" id="sel-bar">
+            <span class="lbl" id="sel-name">item</span>
+            <button id="rot-l" title="rotate left"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button>
+            <button id="rot-r" title="rotate right"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></button>
+            <button id="del-item" title="remove" style="background:#7a2e22"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+          </div>
+          <div class="studio-hint">drag furniture to move · click empty space to deselect · drag background to orbit</div>
+        </div>
+        <div class="studio-foot">
+          <span>Furniture: <a href="https://quaternius.com" target="_blank">Quaternius</a> CC0 via <a href="https://poly.pizza" target="_blank">Poly Pizza</a></span>
+          <span>Art: <a href="https://www.artic.edu/open-access" target="_blank">Art Institute of Chicago</a> · Met (public domain)</span>
+          <span>Street: <a href="https://www.mapillary.com" target="_blank">Mapillary</a></span>
+        </div>
+      </div>
+
+      <!-- RIGHT: street view -->
+      <div class="studio-right" id="studio-right">
+        <div class="right-head">
+          <button class="collapse-btn" id="mly-collapse" title="Hide street view" aria-expanded="true" aria-label="Toggle street view">›</button>
+          <span class="dot"></span><span id="mly-loc">Street view — this location</span>
+          <span class="tokbar">
+            <input id="mly-token" title="Mapillary access token (free)" />
+            <button class="btn btn-ghost btn-sm" id="mly-apply">set</button>
+          </span>
+        </div>
+        <div id="mly">
+          <div class="mly-empty" id="mly-empty">
+            <svg viewBox="0 0 24 24" width="46" height="46"><use href="#pinglyph"/></svg>
+            <p>Looking around this spot…</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<div id="toast"></div>
+
+<!-- ============================================================== *
+ *  APP LOGIC (Three.js via ES module + Leaflet/Mapillary globals)  *
+ * ============================================================== -->
+<script type="importmap">
+{ "imports": {
+  "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+}}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+/* ---------------- global state ---------------- */
+const App = {
+  screen:'landing',
+  pods:[],            // {id, latlng, type, interior:{wall,floor,roof,furniture:[],art}}
+  currentPod:null,
+  map:null, sitesLayer:null, sites:[],   // sites: {type, ring:[[lat,lng]...]}
+  mlyToken: localStorage.getItem('mlyToken') || 'MLY|26275324248758064|7819d63bee8179a083cdd76e20557967',
+};
+const HACKNEY = { s:51.515, w:-0.088, n:51.575, e:-0.015 };
+
+const SITE_STYLE = {
+  parking:      { color:'#7FB6D8', label:'Car park / greyfield' },
+  brownfield:   { color:'#6B3A2E', label:'Brownfield' },
+  garages:      { color:'#EE8259', label:'Garages' },
+  construction: { color:'#7AB35B', label:'Unused construction' },
+};
+
+const FURNITURE = [
+  {n:'Bed',        u:'https://static.poly.pizza/eac4fc76-244d-44ff-8848-ef0348379bf6.glb'},
+  {n:'Couch',      u:'https://static.poly.pizza/4e8fbbf3-9992-4068-8918-2126a0304127.glb'},
+  {n:'Chair',      u:'https://static.poly.pizza/84ecc6a3-2751-4f50-912a-b9f4ff033d7a.glb'},
+  {n:'Table',      u:'https://static.poly.pizza/c8fa18f9-e1e9-4aed-905d-cbc945cb44d9.glb'},
+  {n:'Stool',      u:'https://static.poly.pizza/6ee9a20a-99f8-4c05-a30c-248b102a16ec.glb'},
+  {n:'Shelf',      u:'https://static.poly.pizza/c0c34f64-3591-4f93-8665-dc9c3de5c73b.glb'},
+  {n:'Nightstand', u:'https://static.poly.pizza/deb08e3b-cd54-4252-b5b2-53f86f1c1d04.glb'},
+  {n:'Sink',       u:'https://static.poly.pizza/df5d73a4-4062-465c-8006-d7b691de66cf.glb'},
+  {n:'Fridge',     u:'https://static.poly.pizza/f4b6db1d-0eed-48b1-9a59-df879aaee393.glb'},
+  {n:'Oven',       u:'https://static.poly.pizza/9da28115-a156-414e-ab66-159052279eaf.glb'},
+  {n:'Plant',      u:'https://static.poly.pizza/c087694b-eda0-426e-a5d6-a1f9b9d57a28.glb'},
+  {n:'Cactus',     u:'https://static.poly.pizza/0642461e-5b49-4f04-b4e7-47b6bbb0153a.glb'},
+  {n:'Rug',        u:'https://static.poly.pizza/93588780-3405-40b7-acb4-9a87c88569f6.glb'},
+  {n:'Lamp',       u:'https://static.poly.pizza/194ee2b1-b5e2-4881-9dcd-2b2650b1c765.glb'},
+  {n:'Fireplace',  u:'https://static.poly.pizza/7841807d-cab9-46e2-95c2-1ca0bbee5736.glb'},
+];
+
+const SWATCHES = {
+  wall:['#E4EFD8','#CFE0BD','#FFFFFF','#7FB6D8','#EAD9C8','#1F1F1F'],
+  floor:['#C9A27A','#8a5a3c','#CFE0BD','#9aa0a6','#EE8259','#3a3a37'],
+  roof:['#EE8259','#6B3A2E','#7AB35B','#4a4a47','#7FB6D8','#d6cfc4'],
+};
+
+/* ---------------- helpers ---------------- */
+const $ = s => document.querySelector(s);
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('show'),2400); }
+
+function showScreen(name){
+  App.screen=name;
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  $('#'+(name==='map'?'map-screen':name)).classList.add('active');
+}
+
+/* point-in-polygon (ray cast) on [lat,lng] ring; pt={lat,lng} */
+function inRing(pt, ring){
+  let inside=false;
+  for(let i=0,j=ring.length-1;i<ring.length;j=i++){
+    const yi=ring[i][0],xi=ring[i][1],yj=ring[j][0],xj=ring[j][1];
+    const hit=((yi>pt.lat)!==(yj>pt.lat)) &&
+      (pt.lng < (xj-xi)*(pt.lat-yi)/(yj-yi)+xi);
+    if(hit) inside=!inside;
+  }
+  return inside;
+}
+function siteAt(latlng){
+  for(const s of App.sites){ if(inRing(latlng,s.ring)) return s; }
+  return null;
+}
+
+/* ============================================================== *
+ *  LANDING → MAP                                                 *
+ * ============================================================== */
+$('#start-btn').onclick = ()=>{ showScreen('map'); initMap(); };
+
+/* ============================================================== *
+ *  MAP                                                           *
+ * ============================================================== */
+function initMap(){
+  if(App.map){ App.map.invalidateSize(); return; }
+  const map = L.map('map',{ zoomControl:true, minZoom:13, maxZoom:19 });
+  App.map = map;
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    attribution:'© OpenStreetMap contributors', maxZoom:19
+  }).addTo(map);
+  const b = L.latLngBounds([HACKNEY.s,HACKNEY.w],[HACKNEY.n,HACKNEY.e]);
+  map.fitBounds(b);
+  map.setMaxBounds(b.pad(0.15));
+  App.sitesLayer = L.layerGroup().addTo(map);
+  setTimeout(()=>map.invalidateSize(),60);
+  wireDrop(map);
+  loadSites();
+}
+
+/* drag-and-drop pod chip onto the map */
+$('#pod-chip').addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain','pod');
+  e.dataTransfer.effectAllowed='copy'; });
+function wireDrop(map){
+  const el = map.getContainer();
+  el.addEventListener('dragover', e=>{ e.preventDefault(); e.dataTransfer.dropEffect='copy'; });
+  el.addEventListener('drop', e=>{
+    e.preventDefault();
+    const latlng = map.mouseEventToLatLng(e);
+    const site = siteAt(latlng);
+    if(!site){ toast('homefolk builds on underused sites — drop onto a highlighted plot'); return; }
+    placePod(latlng, site.type);
+  });
+}
+
+function placePod(latlng, type){
+  const id = 'pod'+(App.pods.length+1);
+  const pod = { id, latlng:{lat:latlng.lat,lng:latlng.lng}, type,
+    interior:{ wall:'#E4EFD8', floor:'#C9A27A', roof:'#EE8259', furniture:[], art:null } };
+  App.pods.push(pod);
+  const icon = L.divIcon({ className:'', html:'<div class="pod-marker"><svg viewBox="0 0 48 44" width="34" height="31"><use href="#podglyph"/></svg></div>',
+    iconSize:[34,31], iconAnchor:[17,30] });
+  const m = L.marker(latlng,{icon}).addTo(App.map);
+  m.on('click',()=>openStudio(pod));
+  pod._marker=m;
+  $('#pod-count').textContent = App.pods.length;
+  toast('Pod placed on '+ (SITE_STYLE[type]?.label||type) +' — click it to step inside');
+}
+
+/* fetch underused candidate sites from Overpass — per-category, in parallel,
+   with endpoint fallback + per-request timeout, rendered incrementally so one
+   slow category never blocks the others (the old single combined query 504'd). */
+// Global Overpass mirrors only. private.coffee is first because it also returns
+// CORS for a null origin (works when the file is opened directly via file://).
+// (overpass.osm.ch was removed — it serves a Switzerland-only extract and silently
+// returns 0 elements for London.)
+const OVERPASS_EPS = [
+  'https://overpass.private.coffee/api/interpreter',
+  'https://overpass-api.de/api/interpreter',
+  'https://overpass.kumi.systems/api/interpreter',
+];
+async function fetchOverpass(query){
+  for(const ep of OVERPASS_EPS){
+    try{
+      const ctrl=new AbortController();
+      const to=setTimeout(()=>ctrl.abort(),30000);
+      const r=await fetch(ep,{ method:'POST', body:'data='+encodeURIComponent(query), signal:ctrl.signal });
+      clearTimeout(to);
+      if(!r.ok) continue;
+      const j=await r.json();
+      if(j && j.elements) return j.elements;
+    }catch(e){ /* try next endpoint */ }
+  }
+  return null;
+}
+async function loadSites(){
+  const bbox = `${HACKNEY.s},${HACKNEY.w},${HACKNEY.n},${HACKNEY.e}`;
+  // Two requests only (concurrency of 4 gets rate-limited by community endpoints).
+  // `building=garage` is deliberately excluded — matching every individual lock-up
+  // exploded the query into a 504 timeout. Light group runs first so plots appear fast.
+  const light = `[out:json][timeout:40];(`
+    + `way["landuse"="brownfield"](${bbox});`
+    + `way["landuse"="garages"](${bbox});`
+    + `way["building"="garages"](${bbox});`
+    + `way["landuse"="construction"](${bbox});`
+    + `);out geom;`;
+  const heavy = `[out:json][timeout:50];(way["amenity"="parking"](${bbox}););out geom;`;
+  let done=0, any=false;
+  const run = qq => fetchOverpass(qq).then(els=>{
+    done++;
+    if(els && els.length){ any=true; renderSites(els); }
+    if(any) $('#map-overlay').classList.add('hidden');
+    if(done===2){
+      $('#map-overlay').classList.add('hidden');
+      if(!any) showSitesError('Overpass endpoints are busy');
+      else if(App.sites.length===0) toast('No tagged sites found here right now');
+    }
+  });
+  run(light);
+  run(heavy);
+}
+
+function classify(tags){
+  if(!tags) return null;
+  if(tags.amenity==='parking') return 'parking';
+  if(tags.landuse==='brownfield') return 'brownfield';
+  if(tags.landuse==='garages'||tags.building==='garages'||tags.building==='garage') return 'garages';
+  if(tags.landuse==='construction') return 'construction';
+  return null;
+}
+
+const siteCounts={parking:0,brownfield:0,garages:0,construction:0};
+function renderSites(elements){
+  for(const el of elements){
+    if(el.type!=='way' || !el.geometry || el.geometry.length<3) continue;
+    const type = classify(el.tags); if(!type) continue;
+    const ring = el.geometry.map(p=>[p.lat,p.lon]);
+    App.sites.push({type, ring});
+    siteCounts[type]++;
+    const st = SITE_STYLE[type];
+    L.polygon(ring,{ color:st.color, weight:1.3, fillColor:st.color, fillOpacity:.32,
+      interactive:false }).addTo(App.sitesLayer);
+  }
+  $('#c-parking').textContent=siteCounts.parking;
+  $('#c-brownfield').textContent=siteCounts.brownfield;
+  $('#c-garages').textContent=siteCounts.garages;
+  $('#c-construction').textContent=siteCounts.construction;
+}
+
+function showSitesError(msg){
+  $('#map-overlay').innerHTML =
+    `<div style="max-width:340px;text-align:center">
+       <svg viewBox="0 0 24 24" width="40" height="40"><use href="#pinglyph"/></svg>
+       <p style="font-weight:700;margin:8px 0 4px">Couldn't load Hackney sites</p>
+       <p style="color:var(--ink-soft);font-size:13px;margin:0 0 14px">OpenStreetMap's Overpass API is busy (${msg||'network error'}).</p>
+       <button class="btn btn-primary" id="retry-sites">Retry</button>
+     </div>`;
+  $('#retry-sites').onclick = ()=>{
+    $('#map-overlay').innerHTML='<div class="spinner"></div><div><b>Finding underused sites…</b></div>';
+    loadSites();
+  };
+}
+
+/* ============================================================== *
+ *  STUDIO — 3D interior                                          *
+ * ============================================================== */
+const TD = {};   // three.js scene objects, lazily created
+function ensureThree(){
+  if(TD.renderer) return;
+  const host = $('#three-host');
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color('#eef1ea');
+  const camera = new THREE.PerspectiveCamera(50,1,0.1,100);
+  camera.position.set(0,3.1,7.6);
+  const renderer = new THREE.WebGLRenderer({antialias:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  host.appendChild(renderer.domElement);
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.target.set(0,1.55,0);
+  controls.maxPolarAngle = Math.PI/2.05;
+  controls.minDistance=3.5; controls.maxDistance=13;
+  controls.enablePan=false;
+
+  // lights
+  scene.add(new THREE.HemisphereLight('#ffffff','#b9c4ad',1.05));
+  const dir = new THREE.DirectionalLight('#fff7ec',1.15);
+  dir.position.set(4,8,6); scene.add(dir);
+
+  // pod shell  (W=6 along x, D=4 along z, H=2.6) — front (+z) open dollhouse
+  const W=6,D=4,H=2.6;
+  const mat = c => new THREE.MeshStandardMaterial({color:c,roughness:.95,side:THREE.DoubleSide});
+  const floorMat=mat('#C9A27A'), wallMat=mat('#E4EFD8'), roofMat=mat('#EE8259');
+
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(W,D), floorMat);
+  floor.rotation.x=-Math.PI/2; scene.add(floor);
+  TD.floor=floor;
+
+  const wallGeoBack = new THREE.PlaneGeometry(W,H);
+  const back = new THREE.Mesh(wallGeoBack, wallMat); back.position.set(0,H/2,-D/2); scene.add(back);
+  const left = new THREE.Mesh(new THREE.PlaneGeometry(D,H), wallMat);
+  left.rotation.y=Math.PI/2; left.position.set(-W/2,H/2,0); scene.add(left);
+  const right = new THREE.Mesh(new THREE.PlaneGeometry(D,H), wallMat);
+  right.rotation.y=-Math.PI/2; right.position.set(W/2,H/2,0); scene.add(right);
+  TD.walls=[back,left,right];
+
+  // gable roof: ridge runs along z (front↔back) at x=0, height H+1.1;
+  // the two panels slope down from the ridge to the side walls (x=±W/2).
+  const RH=H+1.1;
+  const quad = (a,b,c,d) => {            // flat panel from 4 world-space corners
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(
+      [...a,...b,...c, ...a,...c,...d], 3));
+    g.computeVertexNormals();
+    return g;
+  };
+  const roofW = new THREE.Mesh(
+    quad([0,RH,-D/2],[0,RH,D/2],[-W/2,H,D/2],[-W/2,H,-D/2]), roofMat);
+  scene.add(roofW);
+  const roofE = new THREE.Mesh(
+    quad([0,RH,-D/2],[0,RH,D/2],[ W/2,H,D/2],[ W/2,H,-D/2]), roofMat);
+  scene.add(roofE);
+  // gable triangle closing the back wall, apex at the ridge
+  const tri = new THREE.Shape();
+  tri.moveTo(-W/2,0); tri.lineTo(W/2,0); tri.lineTo(0,RH-H); tri.lineTo(-W/2,0);
+  const gable = new THREE.Mesh(new THREE.ShapeGeometry(tri), wallMat);
+  gable.position.set(0,H,-D/2); scene.add(gable);
+  TD.roof=[roofW,roofE]; TD.gable=gable;
+
+  // art frame on back wall
+  const frame = new THREE.Mesh(new THREE.PlaneGeometry(1.4,1.0),
+     new THREE.MeshStandardMaterial({color:'#2a2a28'}));
+  frame.position.set(0,1.5,-D/2+0.03); frame.visible=false; scene.add(frame);
+  const canvas = new THREE.Mesh(new THREE.PlaneGeometry(1.3,0.9),
+     new THREE.MeshBasicMaterial({color:'#fff'}));
+  canvas.position.set(0,1.5,-D/2+0.04); canvas.visible=false; scene.add(canvas);
+  TD.frame=frame; TD.artCanvas=canvas;
+
+  TD.scene=scene; TD.camera=camera; TD.renderer=renderer; TD.controls=controls;
+  TD.items=[]; TD.bounds={W,H,D};
+  TD.raycaster=new THREE.Raycaster(); TD.pointer=new THREE.Vector2();
+  TD.loader=new GLTFLoader();
+  TD.selected=null; TD.dragging=null;
+
+  // resize
+  const ro = new ResizeObserver(()=>resizeThree());
+  ro.observe(host);
+  resizeThree();
+  wireThreePointer();
+
+  (function loop(){ requestAnimationFrame(loop); controls.update(); renderer.render(scene,camera); })();
+}
+function resizeThree(){
+  if(!TD.renderer) return;
+  const host=$('#three-host'); const w=host.clientWidth,h=host.clientHeight;
+  if(w===0||h===0) return;
+  TD.renderer.setSize(w,h);   // updateStyle on: keep canvas CSS size == host, not the 2× pixel buffer
+  TD.camera.aspect=w/h; TD.camera.updateProjectionMatrix();
+}
+
+/* surface recolor */
+function applySurface(kind,color){
+  if(!TD.renderer) return;
+  if(kind==='wall'){ TD.walls.forEach(m=>m.material.color.set(color)); TD.gable.material.color.set(color); }
+  if(kind==='floor'){ TD.floor.material.color.set(color); }
+  if(kind==='roof'){ TD.roof.forEach(m=>m.material.color.set(color)); }
+  if(App.currentPod) App.currentPod.interior[kind]=color;
+}
+
+/* load + add a furniture model, drop onto floor, optional saved transform */
+function addFurniture(item, saved){
+  ensureThree();
+  TD.loader.load(item.u, gltf=>{
+    const obj = gltf.scene;
+    // normalise: place base on floor, cap size so nothing is absurd
+    const box=new THREE.Box3().setFromObject(obj);
+    const size=new THREE.Vector3(); box.getSize(size);
+    const maxXZ=Math.max(size.x,size.z)||1;
+    let scale=1;
+    if(maxXZ>2.6) scale=2.6/maxXZ;        // shrink oversized
+    obj.scale.setScalar(scale);
+    obj.updateMatrixWorld(true);
+    const b2=new THREE.Box3().setFromObject(obj);
+    obj.position.y -= b2.min.y;            // sit on floor
+    if(saved){ obj.position.set(saved.x,saved.y,saved.z); obj.rotation.y=saved.ry; if(saved.s) obj.scale.setScalar(saved.s); }
+    else { obj.position.x=(Math.random()-0.5)*2.4; obj.position.z=(Math.random()-0.3)*1.6; }
+    obj.traverse(n=>{ if(n.isMesh){ n.castShadow=true; n.userData.pickRoot=obj; }});
+    obj.userData.item=item;
+    TD.scene.add(obj); TD.items.push(obj);
+    if(!saved) selectItem(obj);
+    saveFurniture();
+  }, undefined, err=>{
+    console.warn('model load failed',item.u,err); toast('Could not load '+item.n+' model');
+  });
+}
+function saveFurniture(){
+  if(!App.currentPod) return;
+  App.currentPod.interior.furniture = TD.items.map(o=>({
+    u:o.userData.item.u, n:o.userData.item.n,
+    x:o.position.x,y:o.position.y,z:o.position.z, ry:o.rotation.y, s:o.scale.x
+  }));
+}
+
+/* selection + drag-to-move on floor plane */
+function selectItem(obj){
+  TD.selected=obj;
+  const bar=$('#sel-bar');
+  if(obj){ bar.classList.remove('hidden'); $('#sel-name').textContent=obj.userData.item.n; }
+  else bar.classList.add('hidden');
+}
+function wireThreePointer(){
+  const dom=TD.renderer.domElement;
+  const floorPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0);
+  function setPointer(e){ const r=dom.getBoundingClientRect();
+    TD.pointer.x=((e.clientX-r.left)/r.width)*2-1;
+    TD.pointer.y=-((e.clientY-r.top)/r.height)*2+1; }
+  let downPos=null;
+  dom.addEventListener('pointerdown', e=>{
+    setPointer(e); downPos={x:e.clientX,y:e.clientY};
+    TD.raycaster.setFromCamera(TD.pointer,TD.camera);
+    const hit=TD.raycaster.intersectObjects(TD.items,true)[0];
+    if(hit){
+      let root=hit.object; while(root && !root.userData.item) root=root.parent;
+      if(root){ selectItem(root); TD.dragging=root; TD.controls.enabled=false; }
+    }
+  });
+  dom.addEventListener('pointermove', e=>{
+    if(!TD.dragging) return;
+    setPointer(e); TD.raycaster.setFromCamera(TD.pointer,TD.camera);
+    const p=new THREE.Vector3();
+    TD.raycaster.ray.intersectPlane(floorPlane,p);
+    if(p){ const lim=TD.bounds;
+      p.x=Math.max(-lim.W/2+0.3,Math.min(lim.W/2-0.3,p.x));
+      p.z=Math.max(-lim.D/2+0.3,Math.min(lim.D/2-0.3,p.z));
+      TD.dragging.position.x=p.x; TD.dragging.position.z=p.z; }
+  });
+  function endDrag(e){
+    if(TD.dragging){ saveFurniture(); }
+    TD.dragging=null; TD.controls.enabled=true;
+    // click on empty space → deselect
+    if(downPos && e && Math.hypot(e.clientX-downPos.x,e.clientY-downPos.y)<4){
+      setPointer(e); TD.raycaster.setFromCamera(TD.pointer,TD.camera);
+      const hit=TD.raycaster.intersectObjects(TD.items,true)[0];
+      if(!hit) selectItem(null);
+    }
+    downPos=null;
+  }
+  dom.addEventListener('pointerup', endDrag);
+}
+$('#rot-l').onclick=()=>{ if(TD.selected){TD.selected.rotation.y+=Math.PI/8;saveFurniture();} };
+$('#rot-r').onclick=()=>{ if(TD.selected){TD.selected.rotation.y-=Math.PI/8;saveFurniture();} };
+$('#del-item').onclick=()=>{ if(TD.selected){ TD.scene.remove(TD.selected);
+  TD.items=TD.items.filter(o=>o!==TD.selected); selectItem(null); saveFurniture(); } };
+
+/* wall art from Art Institute of Chicago (Met fallback) */
+async function hangArt(){
+  ensureThree();
+  $('#art-cap').textContent='loading…';
+  let img=null, cap='';
+  try{
+    const page=1+Math.floor(Math.random()*40);
+    const r=await fetch(`https://api.artic.edu/api/v1/artworks/search?query[term][is_public_domain]=true&fields=id,title,image_id,artist_title&limit=25&page=${page}`);
+    const j=await r.json();
+    const cand=(j.data||[]).filter(d=>d.image_id);
+    if(cand.length){ const a=cand[(Math.random()*cand.length)|0];
+      img=`https://www.artic.edu/iiif/2/${a.image_id}/full/600,/0/default.jpg`;
+      cap=`${a.title}${a.artist_title?' — '+a.artist_title:''}`; }
+  }catch(e){ /* fall through to Met */ }
+  if(!img){
+    try{
+      const ids=[436535,459123,437853,435809,459027,438722,11417,210191];
+      const id=ids[(Math.random()*ids.length)|0];
+      const r=await fetch(`https://collectionapi.metmuseum.org/public/collection/v1/objects/${id}`);
+      const j=await r.json();
+      if(j.primaryImageSmall){ img=j.primaryImageSmall; cap=`${j.title} — ${j.artistDisplayName||'unknown'}`; }
+    }catch(e){}
+  }
+  if(!img){ $('#art-cap').textContent='couldn’t load art — try again'; return; }
+  new THREE.TextureLoader().setCrossOrigin('anonymous').load(img, tex=>{
+    if(tex.colorSpace!==undefined) tex.colorSpace=THREE.SRGBColorSpace;
+    const ar=(tex.image.width||4)/(tex.image.height||3);
+    const h=1.0, w=Math.min(1.9,h*ar);
+    TD.artCanvas.geometry.dispose();
+    TD.artCanvas.geometry=new THREE.PlaneGeometry(w,h);
+    TD.frame.geometry.dispose();
+    TD.frame.geometry=new THREE.PlaneGeometry(w+0.12,h+0.12);
+    TD.artCanvas.material.map=tex; TD.artCanvas.material.color.set('#fff');
+    TD.artCanvas.material.needsUpdate=true;
+    TD.artCanvas.visible=true; TD.frame.visible=true;
+    $('#art-cap').textContent=cap;
+    if(App.currentPod) App.currentPod.interior.art={img,cap};
+  }, undefined, ()=>{ $('#art-cap').textContent='image blocked — shuffle again'; });
+}
+$('#art-btn').onclick=hangArt;
+$('#art-shuffle').onclick=hangArt;
+
+/* build control palettes once */
+function buildPalettes(){
+  // furniture
+  const fg=$('#furn-grid');
+  if(!fg.childElementCount){
+    FURNITURE.forEach(it=>{ const b=document.createElement('button');
+      b.innerHTML=`<span class="nm">${it.n}</span>`;
+      b.onclick=()=>addFurniture(it); fg.appendChild(b); });
+  }
+  // surface swatches
+  const tabs=$('#surf-tabs'); const sw=$('#surf-swatches');
+  function renderSw(kind){ sw.innerHTML='';
+    SWATCHES[kind].forEach(c=>{ const d=document.createElement('div');
+      d.className='sw'; d.style.background=c; d.title=c;
+      d.onclick=()=>{ applySurface(kind,c);
+        sw.querySelectorAll('.sw').forEach(x=>x.classList.remove('active')); d.classList.add('active'); };
+      sw.appendChild(d); }); }
+  if(!tabs._wired){
+    tabs.querySelectorAll('button').forEach(btn=>{ btn.onclick=()=>{
+      tabs.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active'); renderSw(btn.dataset.surf); }; });
+    tabs._wired=true;
+  }
+  renderSw('wall');
+}
+
+/* open the studio for a pod */
+function openStudio(pod){
+  App.currentPod=pod;
+  showScreen('studio');
+  ensureThree();
+  buildPalettes();
+  // reset scene furniture/art to this pod's saved state
+  TD.items.forEach(o=>TD.scene.remove(o)); TD.items=[]; selectItem(null);
+  TD.frame.visible=false; TD.artCanvas.visible=false; $('#art-cap').textContent='';
+  applySurface('wall',pod.interior.wall);
+  applySurface('floor',pod.interior.floor);
+  applySurface('roof',pod.interior.roof);
+  (pod.interior.furniture||[]).forEach(f=>addFurniture({n:f.n,u:f.u},f));
+  setTimeout(resizeThree,50);
+  // street view
+  $('#mly-loc').textContent='Street view — '+(SITE_STYLE[pod.type]?.label||pod.type);
+  loadStreetView(pod.latlng);
+}
+$('#back-btn').onclick=()=>{ showScreen('map'); setTimeout(()=>App.map&&App.map.invalidateSize(),60); };
+
+/* ============================================================== *
+ *  STREET VIEW (Mapillary)                                       *
+ * ============================================================== */
+$('#mly-token').value = App.mlyToken;
+$('#mly-apply').onclick=()=>{ App.mlyToken=$('#mly-token').value.trim();
+  localStorage.setItem('mlyToken',App.mlyToken);
+  if(App.currentPod) loadStreetView(App.currentPod.latlng); };
+
+/* collapse / expand the street-view panel (3D fills the freed space) */
+$('#mly-collapse').onclick=()=>{
+  const collapsed = $('#studio-right').classList.toggle('collapsed');
+  const btn = $('#mly-collapse');
+  btn.textContent = collapsed ? '‹' : '›';
+  btn.title = collapsed ? 'Show street view' : 'Hide street view';
+  btn.setAttribute('aria-expanded', String(!collapsed));
+  setTimeout(resizeThree,280);  // re-fit the canvas after the width transition
+};
+
+async function nearestImage(latlng, d){
+  const bbox=[latlng.lng-d,latlng.lat-d,latlng.lng+d,latlng.lat+d].join(',');
+  const url=`https://graph.mapillary.com/images?access_token=${encodeURIComponent(App.mlyToken)}`
+    +`&fields=id,computed_geometry&bbox=${bbox}&limit=1`;
+  const r=await fetch(url); if(!r.ok) throw new Error('HTTP '+r.status);
+  const j=await r.json(); return (j.data&&j.data[0])?j.data[0].id:null;
+}
+function showMlyEmpty(html){
+  if(App._mly){ try{App._mly.remove();}catch(e){} App._mly=null; }
+  $('#mly').innerHTML=`<div class="mly-empty"><svg viewBox="0 0 24 24" width="46" height="46"><use href="#pinglyph"/></svg><p>${html}</p></div>`;
+}
+async function loadStreetView(latlng){
+  showMlyEmpty('Looking around this spot…');
+  let id=null;
+  try{
+    id = await nearestImage(latlng,0.0009) || await nearestImage(latlng,0.0025);
+  }catch(e){
+    showMlyEmpty('Street view unavailable.<br/>Check the Mapillary token (top-right).'); return;
+  }
+  if(!id){ showMlyEmpty('No street imagery here yet.<br/>Mapillary is crowd-sourced — try a pod on a busier road.'); return; }
+  $('#mly').innerHTML='';
+  try{
+    if(App._mly){ try{App._mly.remove();}catch(e){} }
+    App._mly = new mapillary.Viewer({ accessToken:App.mlyToken, container:'mly', imageId:id });
+  }catch(e){ showMlyEmpty('Could not start the street viewer.'); }
+}
+
+/* re-render map on resize */
+addEventListener('resize',()=>{ if(App.screen==='studio') resizeThree(); });
+
+/* dev bypass — open the studio directly with a demo pod, skipping the map.
+   Add #studio to the URL (e.g. homefolk-builder.html#studio). */
+if(location.hash==='#studio'){
+  const openDemo=()=>openStudio({ id:'demo', latlng:{lat:51.545,lng:-0.055}, type:'parking',
+    interior:{ wall:'#E4EFD8', floor:'#C9A27A', roof:'#EE8259', furniture:[], art:null } });
+  if(document.readyState==='complete') openDemo(); else addEventListener('load',openDemo);
+}
+</script>
+</body>
+</html>
