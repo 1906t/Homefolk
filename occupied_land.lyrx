@@ -1,0 +1,328 @@
+{
+  "type" : "CIMLayerDocument",
+  "version" : "3.5.0",
+  "build" : 57366,
+  "layers" : [
+    "CIMPATH=Map/occupied_land.json"
+  ],
+  "layerDefinitions" : [
+    {
+      "type" : "CIMFeatureLayer",
+      "name" : "occupied_land",
+      "uRI" : "CIMPATH=Map/occupied_land.json",
+      "sourceModifiedTime" : {
+        "type" : "TimeInstant"
+      },
+      "useSourceMetadata" : true,
+      "description" : "occupied_land",
+      "layerElevation" : {
+        "type" : "CIMLayerElevationSurface"
+      },
+      "expanded" : true,
+      "layer3DProperties" : {
+        "type" : "CIM3DLayerProperties",
+        "castShadows" : true,
+        "isLayerLit" : true,
+        "layerFaceCulling" : "None",
+        "maxDistance" : -1,
+        "minDistance" : -1,
+        "preloadTextureCutoffHigh" : 0,
+        "preloadTextureCutoffLow" : 0.25,
+        "textureCutoffHigh" : 0.25,
+        "textureCutoffLow" : 1,
+        "useCompressedTextures" : true,
+        "verticalExaggeration" : 1,
+        "exaggerationMode" : "ScaleZ",
+        "verticalUnit" : {
+          "uwkid" : 9001
+        },
+        "lighting" : "OneSideDataNormal",
+        "optimizeMarkerTransparency" : true
+      },
+      "layerType" : "Operational",
+      "showLegends" : true,
+      "visibility" : true,
+      "displayCacheType" : "Permanent",
+      "maxDisplayCacheAge" : 5,
+      "showPopups" : true,
+      "serviceLayerID" : -1,
+      "refreshRate" : -1,
+      "refreshRateUnit" : "esriTimeUnitsSeconds",
+      "blendingMode" : "Alpha",
+      "allowDrapingOnIntegratedMesh" : true,
+      "autoGenerateFeatureTemplates" : true,
+      "featureElevationExpression" : "0",
+      "featureTable" : {
+        "type" : "CIMFeatureTable",
+        "displayField" : "name1",
+        "editable" : true,
+        "dataConnection" : {
+          "type" : "CIMStandardDataConnection",
+          "workspaceConnectionString" : "DATABASE=.\\Map\\Data\\Hackney_area\\Hackney_area.gdb",
+          "workspaceFactory" : "FileGDB",
+          "dataset" : "occupied_land",
+          "datasetType" : "esriDTFeatureClass"
+        },
+        "studyAreaSpatialRel" : "esriSpatialRelUndefined",
+        "searchOrder" : "esriSearchOrderSpatial"
+      },
+      "htmlPopupEnabled" : true,
+      "selectable" : true,
+      "featureCacheType" : "Session",
+      "displayFiltersType" : "ByScale",
+      "featureBlendingMode" : "Alpha",
+      "layerEffectsMode" : "Layer",
+      "labelClasses" : [
+        {
+          "type" : "CIMLabelClass",
+          "expression" : "$feature.OBJECTID",
+          "expressionEngine" : "Arcade",
+          "featuresToLabel" : "AllVisibleFeatures",
+          "maplexLabelPlacementProperties" : {
+            "type" : "CIMMaplexLabelPlacementProperties",
+            "featureType" : "Polygon",
+            "avoidPolygonHoles" : true,
+            "canOverrunFeature" : true,
+            "canPlaceLabelOutsidePolygon" : true,
+            "canRemoveOverlappingLabel" : true,
+            "canStackLabel" : true,
+            "centerLabelAnchorType" : "Symbol",
+            "connectionType" : "Unambiguous",
+            "constrainOffset" : "NoConstraint",
+            "contourAlignmentType" : "Page",
+            "contourLadderType" : "Straight",
+            "contourMaximumAngle" : 90,
+            "enableConnection" : true,
+            "featureWeight" : 0,
+            "fontHeightReductionLimit" : 4,
+            "fontHeightReductionStep" : 0.5,
+            "fontWidthReductionLimit" : 90,
+            "fontWidthReductionStep" : 5,
+            "graticuleAlignmentType" : "Straight",
+            "keyNumberGroupName" : "Default",
+            "labelBuffer" : 15,
+            "labelLargestPolygon" : false,
+            "labelPriority" : -1,
+            "labelStackingProperties" : {
+              "type" : "CIMMaplexLabelStackingProperties",
+              "stackAlignment" : "ChooseBest",
+              "maximumNumberOfLines" : 3,
+              "minimumNumberOfCharsPerLine" : 3,
+              "maximumNumberOfCharsPerLine" : 24,
+              "separators" : [
+                {
+                  "type" : "CIMMaplexStackingSeparator",
+                  "separator" : " ",
+                  "splitAfter" : true
+                },
+                {
+                  "type" : "CIMMaplexStackingSeparator",
+                  "separator" : ",",
+                  "visible" : true,
+                  "splitAfter" : true
+                }
+              ],
+              "trimStackingSeparators" : true,
+              "preferToStackLongLabels" : true
+            },
+            "lineFeatureType" : "General",
+            "linePlacementMethod" : "OffsetCurvedFromLine",
+            "maximumLabelOverrun" : 80,
+            "maximumLabelOverrunUnit" : "Point",
+            "minimumFeatureSizeUnit" : "Map",
+            "multiPartOption" : "OneLabelPerPart",
+            "offsetAlongLineProperties" : {
+              "type" : "CIMMaplexOffsetAlongLineProperties",
+              "placementMethod" : "BestPositionAlongLine",
+              "labelAnchorPoint" : "CenterOfLabel",
+              "distanceUnit" : "Percentage",
+              "useLineDirection" : true
+            },
+            "pointExternalZonePriorities" : {
+              "type" : "CIMMaplexExternalZonePriorities",
+              "aboveLeft" : 4,
+              "aboveCenter" : 2,
+              "aboveRight" : 1,
+              "centerRight" : 3,
+              "belowRight" : 5,
+              "belowCenter" : 7,
+              "belowLeft" : 8,
+              "centerLeft" : 6
+            },
+            "pointPlacementMethod" : "AroundPoint",
+            "polygonAnchorPointType" : "GeometricCenter",
+            "polygonBoundaryWeight" : 0,
+            "polygonExternalZones" : {
+              "type" : "CIMMaplexExternalZonePriorities",
+              "aboveLeft" : 4,
+              "aboveCenter" : 2,
+              "aboveRight" : 1,
+              "centerRight" : 3,
+              "belowRight" : 5,
+              "belowCenter" : 7,
+              "belowLeft" : 8,
+              "centerLeft" : 6
+            },
+            "polygonFeatureType" : "General",
+            "polygonInternalZones" : {
+              "type" : "CIMMaplexInternalZonePriorities",
+              "center" : 1
+            },
+            "polygonPlacementMethod" : "HorizontalInPolygon",
+            "primaryOffset" : 1,
+            "primaryOffsetUnit" : "Point",
+            "removeAmbiguousLabels" : "All",
+            "removeExtraWhiteSpace" : true,
+            "repetitionIntervalUnit" : "Map",
+            "rotationProperties" : {
+              "type" : "CIMMaplexRotationProperties",
+              "rotationType" : "Arithmetic",
+              "alignmentType" : "Straight"
+            },
+            "secondaryOffset" : 100,
+            "secondaryOffsetUnit" : "Percentage",
+            "strategyPriorities" : {
+              "type" : "CIMMaplexStrategyPriorities",
+              "stacking" : 1,
+              "overrun" : 2,
+              "fontCompression" : 3,
+              "fontReduction" : 4,
+              "abbreviation" : 5
+            },
+            "thinningDistanceUnit" : "Point",
+            "truncationMarkerCharacter" : ".",
+            "truncationMinimumLength" : 1,
+            "truncationPreferredCharacters" : "aeiou",
+            "polygonAnchorPointPerimeterInsetUnit" : "Point"
+          },
+          "name" : "Class 1",
+          "priority" : -1,
+          "standardLabelPlacementProperties" : {
+            "type" : "CIMStandardLabelPlacementProperties",
+            "featureType" : "Line",
+            "featureWeight" : "Low",
+            "labelWeight" : "High",
+            "numLabelsOption" : "OneLabelPerName",
+            "lineLabelPosition" : {
+              "type" : "CIMStandardLineLabelPosition",
+              "above" : true,
+              "inLine" : true,
+              "parallel" : true
+            },
+            "lineLabelPriorities" : {
+              "type" : "CIMStandardLineLabelPriorities",
+              "aboveStart" : 3,
+              "aboveAlong" : 3,
+              "aboveEnd" : 3,
+              "centerStart" : 3,
+              "centerAlong" : 3,
+              "centerEnd" : 3,
+              "belowStart" : 3,
+              "belowAlong" : 3,
+              "belowEnd" : 3
+            },
+            "pointPlacementMethod" : "AroundPoint",
+            "pointPlacementPriorities" : {
+              "type" : "CIMStandardPointPlacementPriorities",
+              "aboveLeft" : 2,
+              "aboveCenter" : 2,
+              "aboveRight" : 1,
+              "centerLeft" : 3,
+              "centerRight" : 2,
+              "belowLeft" : 3,
+              "belowCenter" : 3,
+              "belowRight" : 2
+            },
+            "rotationType" : "Arithmetic",
+            "polygonPlacementMethod" : "AlwaysHorizontal"
+          },
+          "textSymbol" : {
+            "type" : "CIMSymbolReference",
+            "symbol" : {
+              "type" : "CIMTextSymbol",
+              "blockProgression" : "TTB",
+              "depth3D" : 1,
+              "extrapolateBaselines" : true,
+              "fontEffects" : "Normal",
+              "fontEncoding" : "Unicode",
+              "fontFamilyName" : "Tahoma",
+              "fontStyleName" : "Regular",
+              "fontType" : "Unspecified",
+              "haloSize" : 1,
+              "height" : 10,
+              "hinting" : "Default",
+              "horizontalAlignment" : "Left",
+              "kerning" : true,
+              "letterWidth" : 100,
+              "ligatures" : true,
+              "lineGapType" : "ExtraLeading",
+              "symbol" : {
+                "type" : "CIMPolygonSymbol",
+                "symbolLayers" : [
+                  {
+                    "type" : "CIMSolidFill",
+                    "enable" : true,
+                    "color" : {
+                      "type" : "CIMRGBColor",
+                      "values" : [
+                        0,
+                        0,
+                        0,
+                        100
+                      ]
+                    }
+                  }
+                ],
+                "angleAlignment" : "Map"
+              },
+              "textCase" : "Normal",
+              "textDirection" : "LTR",
+              "verticalAlignment" : "Bottom",
+              "verticalGlyphOrientation" : "Right",
+              "wordSpacing" : 100,
+              "billboardMode3D" : "FaceNearPlane"
+            }
+          },
+          "useCodedValue" : true,
+          "visibility" : true,
+          "iD" : -1
+        }
+      ],
+      "renderer" : {
+        "type" : "CIMSimpleRenderer",
+        "sampleSize" : 10000,
+        "patch" : "Default",
+        "symbol" : {
+          "type" : "CIMSymbolReference",
+          "symbol" : {
+            "type" : "CIMPolygonSymbol",
+            "symbolLayers" : [
+              {
+                "type" : "CIMPictureFill",
+                "enable" : true,
+                "url" : "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0a\nHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIy\nMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAEAAQADASIA\nAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQA\nAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3\nODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWm\np6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEA\nAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSEx\nBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElK\nU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3\nuLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwCcsySB\n252ngVaVYEukuXQPvHzDPSmT+THa537S54zzms24dkVCmRjrXek7nwstFcuXAMt6ZAcL3WoJC6K2\n1gxzkA9vaooGaaNkZzleRjrUpU5AIwf51Qoe8riHy2VDKp8vIyV5xUjzIpaRGLKp+Q46imTyvelk\nUKjcbgowMUIBB5aBcjsD3ptofVkRkS6bj5XHepJGJAHYUxrYmeOSIDGTuA7VKqyJKxfawHIxQ32E\nlbVgkisdkiZBGKasUUb4zkHtTmcO+5QPpVaUsjbvund1oTJewXNuEwyHJPUCnRxAQFicMOuaaJGa\nUkEZU/nUuAzc8qTmjUlKLdxjriMFTkkd+1DQiWL73zVPJArrvQnB4YDtURjWPaQTheuKC7b3FRgs\n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\ncsVcHlalqxrTbcT/2Q==",
+                "scaleX" : 1,
+                "height" : 10,
+                "textureFilter" : "Text",
+                "tintColor" : {
+                  "type" : "CIMRGBColor",
+                  "values" : [
+                    255,
+                    255,
+                    255,
+                    100
+                  ]
+                }
+              }
+            ],
+            "angleAlignment" : "Map"
+          }
+        }
+      },
+      "scaleSymbols" : true,
+      "snappable" : true
+    }
+  ],
+  "rGBColorProfile" : "sRGB IEC61966-2.1",
+  "cMYKColorProfile" : "U.S. Web Coated (SWOP) v2"
+}

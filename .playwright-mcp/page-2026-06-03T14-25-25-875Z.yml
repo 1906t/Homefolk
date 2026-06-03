@@ -1,0 +1,21 @@
+- generic [active] [ref=e1]:
+  - img
+  - generic [ref=e34]:
+    - generic [ref=e35]:
+      - img [ref=e37]
+      - generic [ref=e39]: i might live in it
+    - generic [ref=e40]:
+      - generic [ref=e42]:
+        - generic [ref=e43]: Evidence · 5 of 6
+        - heading "What should the pilot prove?" [level=2] [ref=e87]
+        - generic [ref=e45]:
+          - button "Affordability — true cost to residents Does it actually lower housing cost?" [ref=e88] [cursor=pointer]:
+            - generic [ref=e89]: Affordability — true cost to residents
+            - generic [ref=e90]: Does it actually lower housing cost?
+          - button "Wellbeing & community health Does it improve how people live?" [ref=e91] [cursor=pointer]:
+            - generic [ref=e92]: Wellbeing & community health
+            - generic [ref=e93]: Does it improve how people live?
+          - button "Carbon & land impact Is it genuinely low-impact?" [ref=e94] [cursor=pointer]:
+            - generic [ref=e95]: Carbon & land impact
+            - generic [ref=e96]: Is it genuinely low-impact?
+      - button "← back" [ref=e66] [cursor=pointer]

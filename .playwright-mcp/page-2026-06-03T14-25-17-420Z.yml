@@ -1,0 +1,21 @@
+- generic [active] [ref=e1]:
+  - img
+  - generic [ref=e34]:
+    - generic [ref=e35]:
+      - img [ref=e37]
+      - generic [ref=e39]: i might live in it
+    - generic [ref=e40]:
+      - generic [ref=e42]:
+        - generic [ref=e43]: Safety · 3 of 6
+        - heading "What would make you feel safe living there?" [level=2] [ref=e67]
+        - generic [ref=e45]:
+          - button "Full fire & building-standard compliance Highest bar, slower to set up" [ref=e68] [cursor=pointer]:
+            - generic [ref=e69]: Full fire & building-standard compliance
+            - generic [ref=e70]: Highest bar, slower to set up
+          - button "On-site management & clear oversight People accountable day to day" [ref=e71] [cursor=pointer]:
+            - generic [ref=e72]: On-site management & clear oversight
+            - generic [ref=e73]: People accountable day to day
+          - button "Community-led mutual responsibility Lighter touch, more trust-based" [ref=e74] [cursor=pointer]:
+            - generic [ref=e75]: Community-led mutual responsibility
+            - generic [ref=e76]: Lighter touch, more trust-based
+      - button "← back" [ref=e66] [cursor=pointer]

@@ -1,0 +1,38 @@
+- generic [active] [ref=e1]:
+  - img
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - img [ref=e6]
+        - generic [ref=e8]: homefolk
+      - heading "What if a forgotten car park became somewhere to belong?" [level=1] [ref=e9]:
+        - text: What if a forgotten car park
+        - text: became somewhere to belong?
+      - paragraph [ref=e10]: Across Hackney, underused plots sit empty — old car parks, garage courts, leftover land. homefolk wants to test whether they could become small, community-owned, low-carbon tiny-home villages — starting with a student-led pilot.
+      - generic [ref=e11]:
+        - generic [ref=e12]:
+          - generic [ref=e13]: 73%
+          - generic [ref=e14]:
+            - text: of the maximum student maintenance loan is swallowed by average rent
+            - generic [ref=e15]: HEPI/Unipol Accommodation Costs Survey (verify)
+        - generic [ref=e16]:
+          - generic [ref=e17]: £7,000+
+          - generic [ref=e18]:
+            - text: average yearly student rent in the UK — often more than the whole loan in London
+            - generic [ref=e19]: Unipol/NUS (verify)
+      - paragraph [ref=e20]: This isn't finished housing. It's a pilot — and we need your help to test it.
+      - generic [ref=e21]:
+        - button "🎓 I might live in it Would I help test this pilot?" [ref=e22] [cursor=pointer]:
+          - text: 🎓
+          - generic [ref=e23]: I might live in it
+          - generic [ref=e24]: Would I help test this pilot?
+        - button "🔬 I might study it Is this pilot credible enough to support?" [ref=e25] [cursor=pointer]:
+          - text: 🔬
+          - generic [ref=e26]: I might study it
+          - generic [ref=e27]: Is this pilot credible enough to support?
+        - button "🏛️ I might host it Should this pilot be supported here?" [ref=e28] [cursor=pointer]:
+          - text: 🏛️
+          - generic [ref=e29]: I might host it
+          - generic [ref=e30]: Should this pilot be supported here?
+      - button "🏠 Or just explore the pod builder →" [ref=e32] [cursor=pointer]
+    - generic [ref=e33]: "A concept demo for community testers · data: OpenStreetMap, Mapillary, Quaternius (CC0), Art Institute of Chicago"

@@ -1,0 +1,22 @@
+- generic [active] [ref=e1]:
+  - img
+  - generic [ref=e104]:
+    - generic [ref=e105]:
+      - img [ref=e107]
+      - generic [ref=e109]: pilot readiness
+    - generic [ref=e110]:
+      - generic [ref=e113]: 92%
+      - heading "In your view, this pilot is promising and worth testing." [level=2] [ref=e114]
+      - paragraph [ref=e115]: This pilot looks ready to trial. Your question — “Would I help test this pilot?”
+      - list [ref=e116]:
+        - listitem [ref=e117]: A disused car park
+        - listitem [ref=e118]: Compact private pods
+        - listitem [ref=e119]: Full fire & building-standard compliance
+        - listitem [ref=e120]: Consult neighbours before anything is built
+        - listitem [ref=e121]: Affordability — true cost to residents
+        - listitem [ref=e122]: Living day-to-day in a tiny home
+      - link "🎓 Register to help test the pilot" [ref=e123] [cursor=pointer]:
+        - /url: "#"
+      - generic [ref=e124]:
+        - button "🏠 Try the pod builder" [ref=e125] [cursor=pointer]
+        - button "↺ Start over" [ref=e126] [cursor=pointer]

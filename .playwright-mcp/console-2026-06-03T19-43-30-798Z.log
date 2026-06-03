@@ -1,0 +1,69 @@
+[      10ms] [WARNING] Allow attribute will take precedence over 'allowfullscreen'. @ https://homefolk.org.uk/:189
+[      14ms] [WARNING] An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing. @ about:srcdoc:0
+[      51ms] [WARNING] An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing. @ about:srcdoc:0
+[    1277ms] [LOG] This social media feed is powered by Juicer – visit https://juicer.io for more info! @ https://www.juicer.io/embed.js:7
+[    1300ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://www.juicer.io/api/posts/484527702/poster_images.jpg?external_id=7388889863958940960&s=378ef52f2eb3397c9798491b6a0c5c708abab987:0
+[    1301ms] [LOG] Juicer: undefined post with id undefined has a broken poster image. Hiding the image. @ https://www.juicer.io/embed.js:20
+[    1310ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://www.juicer.io/api/posts/484527703/images.jpg?external_id=7388886945809567008&s=dde433f911c2566ee10b012c451bbe2bc5fdacd5:0
+[    1311ms] [LOG] Juicer: tiktok post with id 484527703 has a broken image. Converting to a text post. @ https://www.juicer.io/embed.js:19
+[    1313ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://www.juicer.io/api/posts/484527702/images.jpg?external_id=7388889863958940960&s=378ef52f2eb3397c9798491b6a0c5c708abab987:0
+[    1313ms] [LOG] Juicer: tiktok post with id 484527702 has a broken image. Converting to a text post. @ https://www.juicer.io/embed.js:19
+[    1315ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://www.juicer.io/api/posts/484527703/poster_images.jpg?external_id=7388886945809567008&s=dde433f911c2566ee10b012c451bbe2bc5fdacd5:0
+[    1316ms] [LOG] Juicer: undefined post with id undefined has a broken poster image. Hiding the image. @ https://www.juicer.io/embed.js:20
+[    1327ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://www.juicer.io/api/posts/484527699/poster_images.jpg?external_id=7390014411701865761&s=d0c93c4379368efb6eed21478ef61366c95115f9:0
+[    1327ms] [LOG] Juicer: undefined post with id undefined has a broken poster image. Hiding the image. @ https://www.juicer.io/embed.js:20
+[    1328ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://www.juicer.io/api/posts/484527692/images.jpg?external_id=7390047992876633376&s=7eaa916fba9fa9be7081c0145f5d3f47c6b00356:0
+[    1328ms] [LOG] Juicer: tiktok post with id 484527692 has a broken image. Converting to a text post. @ https://www.juicer.io/embed.js:19
+[    1329ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://www.juicer.io/api/posts/484527691/poster_images.jpg?external_id=7394863887947992353&s=41061cc02463e2cfaa80a1d212ea20f83afb2568:0
+[    1329ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://www.juicer.io/api/posts/484527692/poster_images.jpg?external_id=7390047992876633376&s=7eaa916fba9fa9be7081c0145f5d3f47c6b00356:0
+[    1329ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://www.juicer.io/api/posts/484527693/poster_images.jpg?external_id=7390046169004543264&s=98ff80c6d59fdd23f012b0bd56f7ff499a7e5c5f:0
+[    1329ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://www.juicer.io/api/posts/484527693/images.jpg?external_id=7390046169004543264&s=98ff80c6d59fdd23f012b0bd56f7ff499a7e5c5f:0
+[    1329ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://www.juicer.io/api/posts/484527695/images.jpg?external_id=7390041445677272352&s=2b4ba1d8714d822dbc7470944501e1811d91e4e4:0
+[    1329ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://www.juicer.io/api/posts/484527694/poster_images.jpg?external_id=7390045486721322273&s=b3a1d5d8aa37f0b00eb117512f2f82cb1b94d926:0
+[    1329ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://www.juicer.io/api/posts/484527698/poster_images.jpg?external_id=7390035730862492960&s=df391658674ab14a36893af6993aad3ed5f569d2:0
+[    1329ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://www.juicer.io/api/posts/484527697/images.jpg?external_id=7390036096048008481&s=481046011e3ab674cc0cd823126dec4969577a63:0
+[    1330ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://www.juicer.io/api/posts/484527696/images.jpg?external_id=7390038823452855584&s=15c73bd13298c3732d5049fe5086e006472c8560:0
+[    1330ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://www.juicer.io/api/posts/484527695/poster_images.jpg?external_id=7390041445677272352&s=2b4ba1d8714d822dbc7470944501e1811d91e4e4:0
+[    1330ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://www.juicer.io/api/posts/484527698/images.jpg?external_id=7390035730862492960&s=df391658674ab14a36893af6993aad3ed5f569d2:0
+[    1330ms] [LOG] Juicer: undefined post with id undefined has a broken poster image. Hiding the image. @ https://www.juicer.io/embed.js:20
+[    1330ms] [LOG] Juicer: undefined post with id undefined has a broken poster image. Hiding the image. @ https://www.juicer.io/embed.js:20
+[    1330ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://www.juicer.io/api/posts/484527691/images.jpg?external_id=7394863887947992353&s=41061cc02463e2cfaa80a1d212ea20f83afb2568:0
+[    1330ms] [LOG] Juicer: undefined post with id undefined has a broken poster image. Hiding the image. @ https://www.juicer.io/embed.js:20
+[    1330ms] [LOG] Juicer: tiktok post with id 484527693 has a broken image. Converting to a text post. @ https://www.juicer.io/embed.js:19
+[    1331ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://www.juicer.io/api/posts/484527697/poster_images.jpg?external_id=7390036096048008481&s=481046011e3ab674cc0cd823126dec4969577a63:0
+[    1331ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://www.juicer.io/api/posts/484527696/poster_images.jpg?external_id=7390038823452855584&s=15c73bd13298c3732d5049fe5086e006472c8560:0
+[    1331ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://www.juicer.io/api/posts/484527694/images.jpg?external_id=7390045486721322273&s=b3a1d5d8aa37f0b00eb117512f2f82cb1b94d926:0
+[    1331ms] [LOG] Juicer: tiktok post with id 484527695 has a broken image. Converting to a text post. @ https://www.juicer.io/embed.js:19
+[    1332ms] [LOG] Juicer: undefined post with id undefined has a broken poster image. Hiding the image. @ https://www.juicer.io/embed.js:20
+[    1332ms] [LOG] Juicer: undefined post with id undefined has a broken poster image. Hiding the image. @ https://www.juicer.io/embed.js:20
+[    1332ms] [LOG] Juicer: tiktok post with id 484527697 has a broken image. Converting to a text post. @ https://www.juicer.io/embed.js:19
+[    1333ms] [LOG] Juicer: tiktok post with id 484527696 has a broken image. Converting to a text post. @ https://www.juicer.io/embed.js:19
+[    1333ms] [LOG] Juicer: undefined post with id undefined has a broken poster image. Hiding the image. @ https://www.juicer.io/embed.js:20
+[    1333ms] [LOG] Juicer: tiktok post with id 484527698 has a broken image. Converting to a text post. @ https://www.juicer.io/embed.js:19
+[    1334ms] [LOG] Juicer: tiktok post with id 484527691 has a broken image. Converting to a text post. @ https://www.juicer.io/embed.js:19
+[    1334ms] [LOG] Juicer: undefined post with id undefined has a broken poster image. Hiding the image. @ https://www.juicer.io/embed.js:20
+[    1334ms] [LOG] Juicer: undefined post with id undefined has a broken poster image. Hiding the image. @ https://www.juicer.io/embed.js:20
+[    1334ms] [LOG] Juicer: tiktok post with id 484527694 has a broken image. Converting to a text post. @ https://www.juicer.io/embed.js:19
+[    1342ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://www.juicer.io/api/posts/484527699/images.jpg?external_id=7390014411701865761&s=d0c93c4379368efb6eed21478ef61366c95115f9:0
+[    1342ms] [LOG] Juicer: tiktok post with id 484527699 has a broken image. Converting to a text post. @ https://www.juicer.io/embed.js:19
+[    1343ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://www.juicer.io/api/posts/484527700/poster_images.jpg?external_id=7388921649623567648&s=9e4139ed0e27681afbe6ba39b48c15e12a3764a6:0
+[    1343ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://www.juicer.io/api/posts/484527704/images.jpg?external_id=7388881793954434336&s=793340ba5a877489d2bd74b23a1917757234dfcd:0
+[    1343ms] [LOG] Juicer: undefined post with id undefined has a broken poster image. Hiding the image. @ https://www.juicer.io/embed.js:20
+[    1343ms] [LOG] Juicer: tiktok post with id 484527704 has a broken image. Converting to a text post. @ https://www.juicer.io/embed.js:19
+[    1344ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://www.juicer.io/api/posts/484527700/images.jpg?external_id=7388921649623567648&s=9e4139ed0e27681afbe6ba39b48c15e12a3764a6:0
+[    1344ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://www.juicer.io/api/posts/484527701/images.jpg?external_id=7388895655994969376&s=60ca4240bb06e6d834c2e2df00a946fc1d5a52c2:0
+[    1344ms] [LOG] Juicer: tiktok post with id 484527700 has a broken image. Converting to a text post. @ https://www.juicer.io/embed.js:19
+[    1345ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://www.juicer.io/api/posts/484527705/poster_images.jpg?external_id=7388880024339860768&s=30e5b97e853914554ef0df8e6bb1374cf952d9c0:0
+[    1345ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://www.juicer.io/api/posts/484527704/poster_images.jpg?external_id=7388881793954434336&s=793340ba5a877489d2bd74b23a1917757234dfcd:0
+[    1345ms] [LOG] Juicer: tiktok post with id 484527701 has a broken image. Converting to a text post. @ https://www.juicer.io/embed.js:19
+[    1345ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://www.juicer.io/api/posts/484527701/poster_images.jpg?external_id=7388895655994969376&s=60ca4240bb06e6d834c2e2df00a946fc1d5a52c2:0
+[    1345ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://www.juicer.io/api/posts/484527706/images.jpg?external_id=7388878047073586464&s=1c810510dc0eb6cf8841e409d5c4cbbd855c3399:0
+[    1345ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://www.juicer.io/api/posts/484527705/images.jpg?external_id=7388880024339860768&s=30e5b97e853914554ef0df8e6bb1374cf952d9c0:0
+[    1345ms] [LOG] Juicer: undefined post with id undefined has a broken poster image. Hiding the image. @ https://www.juicer.io/embed.js:20
+[    1345ms] [LOG] Juicer: undefined post with id undefined has a broken poster image. Hiding the image. @ https://www.juicer.io/embed.js:20
+[    1345ms] [LOG] Juicer: undefined post with id undefined has a broken poster image. Hiding the image. @ https://www.juicer.io/embed.js:20
+[    1345ms] [LOG] Juicer: tiktok post with id 484527706 has a broken image. Converting to a text post. @ https://www.juicer.io/embed.js:19
+[    1346ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://www.juicer.io/api/posts/484527706/poster_images.jpg?external_id=7388878047073586464&s=1c810510dc0eb6cf8841e409d5c4cbbd855c3399:0
+[    1346ms] [LOG] Juicer: tiktok post with id 484527705 has a broken image. Converting to a text post. @ https://www.juicer.io/embed.js:19
+[    1346ms] [LOG] Juicer: undefined post with id undefined has a broken poster image. Hiding the image. @ https://www.juicer.io/embed.js:20
+[    1624ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ https://homefolk.org.uk/markup/ad:0

@@ -1,0 +1,1707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>homefolk · build a tiny village in Hackney</title>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet" />
+
+<!-- Leaflet -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- Mapillary (street view) -->
+<link rel="stylesheet" href="https://unpkg.com/mapillary-js@4.1.2/dist/mapillary.css" />
+<script src="https://unpkg.com/mapillary-js@4.1.2/dist/mapillary.js"></script>
+
+<style>
+/* ============================================================== *
+ *  1. BRAND TOKENS  (extracted from LIVE PROJECT 2024 PDF)        *
+ * ============================================================== */
+:root{
+  --green:#7AB35B;   --green-d:#5f9544;
+  --sage:#CFE0BD;    --sage-l:#E4EFD8;
+  --coral:#EE8259;   --coral-d:#d86a42;
+  --maroon:#6B3A2E;
+  --sky:#7FB6D8;
+  --ink:#1F1F1F;     --ink-soft:#54534f;
+  --paper:#FFFFFF;   --line:#e7e7e2;
+  --shadow:0 10px 30px rgba(31,31,31,.12);
+  font-family:'Poppins',system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;color:var(--ink);background:var(--paper)}
+body{overflow:hidden}
+button{font-family:inherit}
+.hidden{display:none !important}
+
+/* ---- shared: angled green banner + A-frame logo ---- */
+.banner{
+  position:relative;height:74px;background:var(--green);color:#fff;
+  display:flex;align-items:center;padding:0 26px;flex:0 0 auto;z-index:600;
+  clip-path:polygon(0 0,100% 0,100% 100%,0 76%);
+}
+.banner .title{margin-left:auto;font-weight:700;font-size:26px;letter-spacing:.2px;
+  text-transform:lowercase;padding-bottom:6px}
+.logo{display:inline-flex;align-items:flex-end;gap:0;width:46px;height:40px;position:relative}
+.logo svg{width:46px;height:40px;overflow:visible}
+.banner .logo-wrap{background:#fff;border-radius:8px;padding:7px 9px 5px;display:flex;
+  box-shadow:0 3px 10px rgba(0,0,0,.12);margin-bottom:4px}
+
+/* ---- buttons ---- */
+.btn{border:none;border-radius:999px;padding:13px 26px;font-weight:600;font-size:15px;
+  cursor:pointer;transition:transform .08s ease,box-shadow .15s ease,background .15s}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--coral);color:#fff;box-shadow:0 6px 16px rgba(238,130,89,.4)}
+.btn-primary:hover{background:var(--coral-d)}
+.btn-ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn-ghost:hover{border-color:var(--green);color:var(--green-d)}
+.btn-sm{padding:8px 14px;font-size:13px}
+
+/* screen container */
+#app{height:100vh;display:flex;flex-direction:column}
+.screen{flex:1;min-height:0;display:none;flex-direction:column}
+.screen.active{display:flex}
+
+/* ============================================================== *
+ *  2. LANDING — scrollable story page                            *
+ * ============================================================== */
+#landing{overflow-y:auto;overflow-x:hidden;scroll-behavior:smooth}
+#landing.active{display:block}   /* block flow so the story scrolls normally (not a flex column) */
+
+/* content rhythm + shared type */
+.wrap{max-width:1080px;margin:0 auto;padding:0 28px;width:100%}
+.sec{padding:92px 0}
+.band{background:
+   radial-gradient(900px 460px at 88% -25%,var(--sage-l),transparent 60%),var(--sage-l)}
+.band-green{background:var(--green);color:#fff}
+.eyebrow{font-size:13px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--green-d)}
+.band-green .eyebrow{color:rgba(255,255,255,.82)}
+.h-xl{font-size:clamp(40px,6.2vw,74px);font-weight:800;line-height:1.02;letter-spacing:-1.6px;margin:16px 0}
+.h-lg{font-size:clamp(30px,4.4vw,52px);font-weight:800;line-height:1.05;letter-spacing:-1px;margin:10px 0 16px}
+.h-lg .g{color:var(--green-d)}
+.h-xl .g{background:linear-gradient(90deg,#3F7F55,#78B276,#C99A3A);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.h-xl .c,.h-lg .c{color:var(--coral-d)}
+.band-green .h-lg .g{color:#fff;text-decoration:underline;text-decoration-color:rgba(255,255,255,.55);text-underline-offset:7px}
+.lede{font-size:clamp(17px,2vw,21px);color:var(--ink-soft);line-height:1.55;max-width:640px}
+.sec p.body{font-size:16px;color:var(--ink-soft);line-height:1.6;max-width:620px}
+
+/* sticky top nav */
+.nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:20px;
+  padding:13px 28px;background:rgba(255,255,255,.88);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line)}
+.nav img.brand{height:30px;width:auto;display:block}
+.nav .links{margin-left:auto;display:flex;gap:26px;align-items:center}
+.nav .links a{color:var(--ink-soft);text-decoration:none;font-size:14px;font-weight:600}
+.nav .links a:hover{color:var(--green-d)}
+@media(max-width:820px){.nav .links a:not(.btn){display:none}}
+
+/* hero */
+.hero{position:relative;padding:78px 0 88px;overflow:hidden;background:
+   radial-gradient(1100px 540px at 84% -8%,var(--sage-l),transparent 58%),
+   radial-gradient(820px 520px at -8% 116%,var(--sage-l),transparent 55%),var(--paper)}
+.hero .tagchip{display:inline-block;background:#fff;border:1.5px solid var(--sage);border-radius:999px;
+  padding:7px 16px;font-size:13px;font-weight:600;color:var(--green-d);margin-bottom:22px}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+.hero-art{position:absolute;right:clamp(-60px,-3vw,-20px);bottom:-34px;width:min(38vw,400px);opacity:.95;pointer-events:none}
+@media(max-width:880px){.hero-art{display:none}}
+
+/* stat cards */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px;margin-top:36px}
+.statc{background:#fff;border:1px solid var(--line);border-radius:18px;padding:24px 20px;box-shadow:var(--shadow)}
+.statc .n{font-size:clamp(40px,5vw,54px);font-weight:800;color:var(--coral-d);line-height:1;letter-spacing:-1.5px}
+.statc .l{margin-top:11px;font-size:14px;color:var(--ink);font-weight:600;line-height:1.35}
+.statc .src{margin-top:9px;font-size:11px;color:var(--ink-soft)}
+
+/* two-column feature */
+.split{display:grid;grid-template-columns:1.05fr .95fr;gap:50px;align-items:center}
+@media(max-width:780px){.split{grid-template-columns:1fr;gap:30px}}
+.feature-note{background:#fff;border:2px solid var(--sage);border-radius:20px;padding:24px;font-size:15px;line-height:1.55}
+.feature-note b{color:var(--green-d)}
+.feature-note .big{font-size:34px;font-weight:800;color:var(--ink);letter-spacing:-1px;display:block;margin-bottom:6px}
+
+/* day in the life */
+.day-strip{display:flex;gap:14px;overflow-x:auto;padding:10px 0 16px;scroll-snap-type:x proximity}
+.day-card{flex:0 0 152px;scroll-snap-align:start;background:#fff;border:1px solid var(--line);border-radius:16px;
+  padding:18px 16px;text-align:center}
+.day-card .t{display:inline-block;background:var(--ink);color:#fff;border-radius:8px;padding:3px 10px;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}
+.day-card .ico{font-size:30px;margin:14px 0 8px}
+.day-card .d{font-size:13px;color:var(--ink-soft);line-height:1.35}
+
+/* numbered steps */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px;margin-top:32px}
+.step{background:#fff;border:1px solid var(--line);border-radius:18px;padding:26px 22px}
+.step .num{width:42px;height:42px;border-radius:50%;background:var(--sage-l);color:var(--green-d);
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;margin-bottom:14px}
+.step h4{margin:0 0 6px;font-size:17px}
+.step p{margin:0;font-size:14px;color:var(--ink-soft);line-height:1.45}
+
+/* credibility / standards cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(238px,1fr));gap:18px;margin-top:32px}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:26px}
+.band .card{border-color:transparent}
+.card h4{margin:0 0 12px;font-size:17px;display:flex;align-items:center;gap:9px}
+.card ul{margin:0;padding-left:18px;color:var(--ink-soft);font-size:14px;line-height:1.65}
+/* reflective prompts band */
+.prompt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;text-align:left}
+.prompt{display:flex;gap:14px;align-items:flex-start;background:#FFFEFA;border:1px solid var(--line);
+  border-radius:18px;padding:22px 22px}
+.prompt .pr-mark{flex:0 0 auto;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-weight:800;font-size:16px;color:var(--green-d);background:var(--sage-l)}
+.prompt .pr-q{font-size:16px;line-height:1.5;color:var(--ink);font-weight:600;letter-spacing:-.2px}
+.card .badge{display:inline-block;background:var(--sage-l);color:var(--green-d);border-radius:8px;
+  padding:4px 10px;font-size:12px;font-weight:700;margin:4px 6px 0 0}
+
+/* ownership */
+.own-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-top:30px}
+.own{background:#fff;border:1px solid var(--line);border-radius:18px;padding:26px;border-top:5px solid var(--green)}
+.own:nth-child(2){border-top-color:var(--coral)} .own:nth-child(3){border-top-color:var(--sky)}
+.own .tag{font-size:12px;font-weight:700;color:var(--ink-soft);letter-spacing:.04em;text-transform:uppercase}
+.own h4{margin:5px 0 8px;font-size:21px}
+.own p{margin:0;font-size:14px;color:var(--ink-soft);line-height:1.5}
+.precedent{margin-top:30px;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:680px){.precedent{grid-template-columns:1fr}}
+.precedent .p{background:var(--sage-l);border-radius:16px;padding:22px;font-size:14px;line-height:1.55;color:var(--ink-soft)}
+.precedent .p b{display:block;font-size:16px;color:var(--ink);margin-bottom:5px}
+
+/* voices */
+.voice{max-width:780px;margin:0 auto;text-align:center}
+.voice blockquote{font-size:clamp(20px,2.7vw,30px);line-height:1.38;font-weight:600;color:var(--ink);margin:0 0 16px}
+.voice blockquote::before{content:'“';color:var(--coral);font-weight:800}
+.voice blockquote::after{content:'”';color:var(--coral);font-weight:800}
+.voice .who{font-size:14px;color:var(--ink-soft);font-weight:600}
+
+/* timeline */
+.tl{display:flex;overflow-x:auto;padding:34px 0 12px;scroll-snap-type:x proximity}
+.tl-item{flex:0 0 188px;scroll-snap-align:start;position:relative;padding:0 16px}
+.tl-item::before{content:'';position:absolute;top:6px;left:0;right:0;height:2px;background:rgba(255,255,255,.4)}
+.band-green .tl-item .dot{background:#fff}
+.tl-item .dot{width:14px;height:14px;border-radius:50%;background:var(--green);position:relative;z-index:1;border:3px solid var(--green)}
+.band-green .tl-item .dot{border-color:var(--green)}
+.tl-item .yr{font-weight:800;font-size:21px;margin:16px 0 5px}
+.tl-item .ev{font-size:13px;line-height:1.4;opacity:.92}
+
+/* footer */
+.foot{background:var(--ink);color:#fff;padding:56px 0 30px}
+.foot a{color:#fff;text-decoration:none}
+.foot .ft-top{display:flex;justify-content:space-between;gap:34px;flex-wrap:wrap;align-items:flex-start}
+.foot img.brand{height:50px;background:#fff;border-radius:10px;padding:9px 12px}
+.foot .ft-tag{margin-top:14px;font-size:14px;color:rgba(255,255,255,.6);max-width:280px;line-height:1.5}
+.foot .socials{display:flex;flex-direction:column;gap:11px;font-size:15px;font-weight:600}
+.foot .socials a{display:flex;align-items:center;gap:10px;opacity:.92}
+.foot .socials a:hover{opacity:1;color:var(--green)}
+.foot .socials .ic{flex:0 0 22px;display:inline-flex;justify-content:center;font-weight:800}
+.foot .fine{margin-top:42px;border-top:1px solid rgba(255,255,255,.16);padding-top:20px;
+  font-size:12px;color:rgba(255,255,255,.55);line-height:1.6}
+
+/* reveal motion */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
+.reveal.in{opacity:1;transform:none}
+.hero .reveal{transition-delay:var(--d,0s)}
+@media(prefers-reduced-motion:reduce){
+  .reveal{opacity:1;transform:none;transition:none}
+  #landing{scroll-behavior:auto}
+}
+
+/* ---- audience switch button in nav ---- */
+#aud-switch{display:inline-flex;align-items:center;gap:5px}
+@media(max-width:820px){#aud-switch{display:none}}
+
+/* ============================================================== *
+ *  2b. AUDIENCE GATEWAY (full-screen doorway overlay)            *
+ * ============================================================== */
+#gateway{
+  position:fixed;inset:0;z-index:800;display:flex;align-items:center;justify-content:center;
+  padding:56px 26px;overflow-y:auto;
+  background:
+    radial-gradient(1200px 600px at 84% -12%,#EFEAD9,transparent 60%),
+    radial-gradient(900px 560px at -10% 118%,#EFEAD9,transparent 58%),#F7F3EA;
+  transition:opacity .45s ease;
+}
+#gateway.is-hidden{opacity:0;pointer-events:none;visibility:hidden}
+.gate-inner{max-width:1040px;width:100%;text-align:center;margin:auto;
+  display:flex;flex-direction:column;align-items:center}
+.gate-logo{display:inline-flex;margin-bottom:30px}
+.gate-logo img.brand{height:42px;width:auto;display:block}
+.gate-kicker{font-size:13px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#4F8F45;margin-bottom:24px}
+.gate-title{font-size:clamp(40px,6.4vw,72px);font-weight:800;line-height:1.04;letter-spacing:-1.8px;
+  color:#1F271F;margin:0 0 26px;max-width:15ch}
+.gate-grad{background:linear-gradient(90deg,#4F8F45,#7FA96B,#C99A3A);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.gate-sub{font-size:clamp(16px,1.8vw,19px);color:#6F7E6F;line-height:1.6;max-width:600px;margin:0 auto 54px;font-weight:400}
+.gate-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;text-align:left;width:100%}
+@media(max-width:820px){.gate-cards{grid-template-columns:1fr;max-width:440px;margin:0 auto}}
+.gate-card{position:relative;display:flex;flex-direction:column;gap:10px;background:#FFFEFA;border:1px solid #E5DED2;
+  border-radius:24px;padding:34px 30px;cursor:pointer;font-family:inherit;text-align:left;
+  box-shadow:0 6px 22px rgba(31,39,31,.05);
+  transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+.gate-card:hover{transform:translateY(-6px);box-shadow:0 18px 44px rgba(31,39,31,.12);border-color:#7FA96B}
+.gate-card .gc-ico{display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;
+  border-radius:50%;margin-bottom:16px;background:linear-gradient(135deg,rgba(79,143,69,.14),rgba(201,154,58,.14));
+  transition:background .2s ease}
+.gate-card .gc-ico svg{width:28px;height:28px;display:block}
+.gate-card:hover .gc-ico{background:linear-gradient(135deg,rgba(79,143,69,.22),rgba(201,154,58,.22))}
+.gate-kicker .gk-ico{display:inline-flex;vertical-align:-2px;margin-left:7px;color:#7FA96B}
+.gate-kicker .gk-ico svg{width:15px;height:15px}
+.gate-card b{font-size:21px;color:#1F271F;letter-spacing:-.4px;font-weight:700}
+.gate-card .gc-tag{margin-top:-4px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7FA96B}
+.gate-card i{font-style:normal;font-size:14.5px;color:#6F7E6F;line-height:1.5}
+.gate-card .gc-arrow{position:absolute;top:24px;right:26px;font-size:18px;color:#7FA96B;
+  transition:transform .2s ease,color .2s ease}
+.gate-card:hover .gc-arrow{color:#C99A3A;transform:translateX(3px)}
+.gate-skip{margin-top:44px;border:none;background:transparent;cursor:pointer;font-family:inherit;
+  font-size:14.5px;font-weight:600;color:#6F7E6F;padding:8px;transition:color .2s ease}
+.gate-skip:hover{color:#4F8F45}
+@media(prefers-reduced-motion:reduce){
+  #gateway{transition:none}
+  .gate-card{transition:none}
+}
+
+/* ---- recommended-for-you tiles (per audience) ---- */
+.reco-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(244px,1fr));gap:16px;margin-top:30px}
+.reco-card{display:flex;flex-direction:column;align-items:flex-start;gap:8px;text-align:left;
+  background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px 20px;cursor:pointer;
+  font-family:inherit;box-shadow:var(--shadow);
+  transition:transform .15s ease,box-shadow .15s ease,border-color .15s}
+.reco-card:hover{transform:translateY(-3px);box-shadow:0 16px 34px rgba(31,31,31,.14);border-color:var(--sage)}
+.reco-card:active{transform:translateY(-1px)}
+.reco-card .rc-ico{font-size:28px;line-height:1}
+.reco-card .rc-t{font-size:16px;font-weight:700;color:var(--ink);line-height:1.25}
+.reco-card .rc-d{font-size:13px;color:var(--ink-soft);line-height:1.5}
+.reco-card .rc-go{margin-top:2px;font-size:13px;font-weight:700;color:var(--green-d)}
+@media(prefers-reduced-motion:reduce){.reco-card{transition:none}}
+
+/* ============================================================== *
+ *  3. MAP                                                        *
+ * ============================================================== */
+#map-screen{position:relative}
+#map{position:absolute;inset:74px 0 0 0}
+.leaflet-container{background:#dfe6d9}
+
+/* pod tray */
+.tray{position:absolute;top:92px;left:16px;z-index:610;width:230px;background:#fff;
+  border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+.tray h3{margin:0;padding:13px 16px 4px;font-size:15px}
+.tray p{margin:0;padding:0 16px 12px;font-size:12px;color:var(--ink-soft);line-height:1.4}
+.pod-chip{margin:0 14px 14px;border:2px dashed var(--coral);border-radius:14px;
+  background:var(--sage-l);padding:14px;display:flex;align-items:center;gap:12px;
+  cursor:grab;user-select:none;transition:background .15s}
+.pod-chip:hover{background:#fff}
+.pod-chip:active{cursor:grabbing}
+.pod-chip .ico{font-size:30px;line-height:1}
+.pod-chip .t{font-weight:700;font-size:14px}
+.pod-chip .d{font-size:11px;color:var(--ink-soft)}
+.tray .village{border-top:1px solid var(--line);padding:11px 16px;font-size:12px;color:var(--ink-soft)}
+.tray .village b{color:var(--ink);font-size:14px}
+
+/* legend */
+.legend{position:absolute;bottom:18px;left:16px;z-index:610;background:#fff;border-radius:14px;
+  box-shadow:var(--shadow);padding:12px 14px;font-size:12px;max-width:230px}
+.legend h4{margin:0 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-soft)}
+.legend .row{display:flex;align-items:center;gap:9px;margin:5px 0}
+.legend .sw{width:16px;height:16px;border-radius:4px;flex:0 0 auto;opacity:.85}
+.legend .cnt{margin-left:auto;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+
+/* map overlay (loading / error) */
+.map-overlay{position:absolute;inset:74px 0 0 0;z-index:620;background:rgba(255,255,255,.82);
+  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;text-align:center}
+.spinner{width:42px;height:42px;border-radius:50%;border:4px solid var(--sage);
+  border-top-color:var(--green);animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* toast */
+#toast{position:absolute;left:50%;bottom:30px;transform:translateX(-50%) translateY(20px);
+  z-index:700;background:var(--ink);color:#fff;padding:12px 20px;border-radius:999px;
+  font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:.25s;white-space:nowrap}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* pod marker */
+.pod-marker{font-size:26px;filter:drop-shadow(0 4px 5px rgba(0,0,0,.35));cursor:pointer;
+  transition:transform .12s}
+.pod-marker:hover{transform:scale(1.18)}
+
+/* hint button bottom-right */
+.map-hint{position:absolute;right:16px;bottom:18px;z-index:610;background:#fff;border-radius:12px;
+  box-shadow:var(--shadow);padding:10px 14px;font-size:12px;color:var(--ink-soft);max-width:240px}
+.map-hint b{color:var(--ink)}
+
+/* ============================================================== *
+ *  4. STUDIO                                                     *
+ * ============================================================== */
+#studio{background:#f4f6f1}
+.studio-body{flex:1;min-height:0;display:flex}
+.studio-left{flex:1.25;min-width:0;position:relative;display:flex;flex-direction:column;background:#eef1ea}
+#three-host{flex:1;min-height:0;position:relative}
+#three-host canvas{display:block}
+.studio-right{flex:1;min-width:0;border-left:1px solid var(--line);display:flex;flex-direction:column;background:#000;transition:flex-grow .25s ease,flex-basis .25s ease}
+.right-head{background:#fff;padding:10px 16px;font-size:13px;display:flex;align-items:center;gap:10px;flex:0 0 auto}
+.collapse-btn{flex:0 0 auto;border:none;background:transparent;cursor:pointer;font-size:20px;line-height:1;
+  color:var(--ink-soft);padding:2px 8px;border-radius:8px;transition:background .15s,color .15s}
+.collapse-btn:hover{background:var(--sage-l);color:var(--green-d)}
+/* collapsed: panel shrinks to a thin spine; only the toggle + a vertical label remain */
+.studio-right.collapsed{flex:0 0 44px}
+.studio-right.collapsed #mly{display:none}
+.studio-right.collapsed .right-head{flex-direction:column;align-items:center;gap:14px;height:100%;padding:10px 0;justify-content:flex-start}
+.studio-right.collapsed .right-head .dot,
+.studio-right.collapsed .right-head .tokbar{display:none}
+.studio-right.collapsed #mly-loc{writing-mode:vertical-rl;text-orientation:mixed;color:var(--ink-soft);font-weight:600;white-space:nowrap}
+.right-head .dot{width:9px;height:9px;border-radius:50%;background:var(--green)}
+#mly{flex:1;min-height:0;position:relative;background:#11140f}
+.mly-empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:12px;text-align:center;color:#fff;background:var(--sage);padding:26px}
+.mly-empty .big{font-size:40px}
+.mly-empty p{max-width:280px;color:#3c4a30;font-weight:600}
+
+/* controls panel over 3D */
+.controls{position:absolute;top:14px;left:14px;right:14px;z-index:5;display:flex;gap:10px;
+  flex-wrap:wrap;align-items:flex-start;pointer-events:none}
+.panel{background:rgba(255,255,255,.95);border-radius:14px;box-shadow:var(--shadow);
+  padding:11px 13px;pointer-events:auto;backdrop-filter:blur(4px)}
+.panel h4{margin:0 0 8px;font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--ink-soft)}
+.swatches{display:flex;gap:7px}
+.swatches .sw{width:24px;height:24px;border-radius:7px;border:2px solid #fff;
+  box-shadow:0 0 0 1px var(--line);cursor:pointer}
+.swatches .sw.active{box-shadow:0 0 0 2px var(--ink)}
+.surf-tabs{display:flex;gap:5px;margin-bottom:8px}
+.surf-tabs button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:4px 9px;
+  font-size:12px;cursor:pointer}
+.surf-tabs button.active{background:var(--green);color:#fff;border-color:var(--green)}
+
+.furn-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-width:240px}
+.furn-grid button{border:1px solid var(--line);background:var(--sage-l);border-radius:10px;padding:9px 4px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.12s}
+.furn-grid button:hover{border-color:var(--coral);background:#fff;transform:translateY(-1px)}
+.furn-grid .nm{font-size:11px;font-weight:600;color:var(--ink);line-height:1;text-align:center}
+
+/* selected-furniture toolbar (bottom center of 3D) */
+.sel-bar{position:absolute;bottom:46px;left:50%;transform:translateX(-50%);z-index:6;
+  background:rgba(31,31,31,.92);border-radius:999px;padding:7px 10px;display:flex;gap:7px;align-items:center;
+  pointer-events:auto}
+.sel-bar.hidden{display:none}
+.sel-bar button{border:none;background:#3a3a37;color:#fff;border-radius:999px;width:34px;height:34px;
+  font-size:15px;cursor:pointer}
+.sel-bar button:hover{background:var(--coral)}
+.sel-bar .lbl{color:#fff;font-size:12px;padding:0 8px;font-weight:600}
+
+.studio-foot{flex:0 0 auto;background:#fff;border-top:1px solid var(--line);padding:6px 16px;
+  font-size:10.5px;color:var(--ink-soft);display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.studio-foot a{color:var(--green-d)}
+.studio-hint{position:absolute;bottom:10px;left:14px;z-index:5;font-size:11px;color:var(--ink-soft);
+  background:rgba(255,255,255,.85);padding:5px 10px;border-radius:8px;pointer-events:none}
+
+/* settings (mapillary token) */
+.tokbar{display:flex;align-items:center;gap:6px;margin-left:auto}
+.tokbar input{border:1px solid var(--line);border-radius:7px;padding:5px 8px;font-size:11px;width:120px;
+  font-family:monospace}
+.loading-art{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.6);z-index:7;font-size:13px;color:var(--ink-soft)}
+
+</style>
+</head>
+<body>
+
+<!-- reusable A-frame logo (sky / maroon / coral bars forming a tent) -->
+<svg width="0" height="0" style="position:absolute"><defs>
+  <linearGradient id="iconGrad" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0"    stop-color="#4F8F45"/>
+    <stop offset="0.55" stop-color="#7FA96B"/>
+    <stop offset="1"    stop-color="#C99A3A"/>
+  </linearGradient>
+  <g id="aframe">
+    <rect x="2"  y="6"  width="7" height="44" rx="3" transform="rotate(24 5 28)"  fill="#7FB6D8"/>
+    <rect x="30" y="6"  width="7" height="44" rx="3" transform="rotate(-24 33 28)" fill="#6B3A2E"/>
+    <rect x="0"  y="48" width="46" height="7" rx="3" fill="#EE8259"/>
+  </g>
+  <symbol id="podglyph" viewBox="0 0 48 44">
+    <rect x="8" y="20" width="32" height="18" rx="2" fill="#EE8259"/>
+    <path d="M5 21 L24 7 L43 21 Z" fill="#EE8259" stroke="#6B3A2E" stroke-width="2.5" stroke-linejoin="round"/>
+    <rect x="20" y="25" width="9" height="13" rx="1" fill="#fff"/>
+    <circle cx="15" cy="40" r="3.2" fill="#1F1F1F"/>
+    <circle cx="33" cy="40" r="3.2" fill="#1F1F1F"/>
+  </symbol>
+  <symbol id="pinglyph" viewBox="0 0 24 24">
+    <path d="M12 2C7.6 2 4 5.5 4 9.8 4 15 12 22 12 22s8-7 8-12.2C20 5.5 16.4 2 12 2z" fill="#7AB35B"/>
+    <circle cx="12" cy="9.8" r="3.2" fill="#fff"/>
+  </symbol>
+</defs></svg>
+
+<div id="app">
+
+  <!-- ===================== LANDING (story page) ===================== -->
+  <section id="landing" class="screen active">
+
+    <!-- nav -->
+    <nav class="nav">
+      <img class="brand" src="qt=q_95.webp" alt="homefolk" />
+      <div class="links">
+        <a href="#problem">The problem</a>
+        <a href="#concept">The home</a>
+        <a href="#how">How it works</a>
+        <a href="#standards">Standards</a>
+        <a href="#involved">Get involved</a>
+        <button class="btn btn-ghost btn-sm" id="aud-switch" title="Choose your route through homefolk">↺ <span id="aud-switch-label">Switch view</span></button>
+        <button class="btn btn-primary btn-sm" id="nav-builder">Explore the builder</button>
+      </div>
+    </nav>
+
+    <!-- hero -->
+    <header class="hero">
+      <div class="wrap">
+        <div class="tagchip reveal" style="--d:.05s">Tiny homes, owned together</div>
+        <h1 class="h-xl reveal" style="--d:.12s" data-aud="heroTitle">Housing,<br/><span class="g">rebuilt</span> one block at a time.</h1>
+        <p class="lede reveal" style="--d:.2s" data-aud="heroLead">London's forgotten car parks and greyfield plots sit empty while rent eats your income. <b>homefolk</b> turns them into small, community-owned tiny-home villages — built with students, for students, as a living pilot.</p>
+        <div class="hero-actions reveal" style="--d:.28s">
+          <a class="btn btn-primary" href="https://homefolk.org.uk" target="_blank" rel="noopener" data-aud="heroCta">Help test the pilot →</a>
+          <button class="btn btn-ghost" id="hero-builder">🏠 Build your own village</button>
+        </div>
+      </div>
+      <svg class="hero-art" viewBox="0 0 240 120" aria-hidden="true">
+        <use href="#podglyph" x="6"   y="48" width="96"  height="88"/>
+        <use href="#podglyph" x="92"  y="30" width="120" height="110"/>
+        <use href="#podglyph" x="176" y="56" width="80"  height="74"/>
+      </svg>
+    </header>
+
+    <!-- 0 · recommended for you (per audience — hidden until a lens is chosen) -->
+    <section class="sec hidden" id="reco">
+      <div class="wrap">
+        <div class="eyebrow reveal in">Recommended for you</div>
+        <h2 class="h-lg reveal in" data-aud="recoTitle">Picked for <span class="g">you</span>.</h2>
+        <p class="body reveal in" data-aud="recoLead">A shortlist matched to what you came here for — so you’re not wading through everything at once.</p>
+        <div class="reco-grid" data-aud="reco"></div>
+      </div>
+    </section>
+
+    <!-- 1 · the problem -->
+    <section class="sec band" id="problem">
+      <div class="wrap">
+        <div class="eyebrow reveal">The problem</div>
+        <h2 class="h-lg reveal" data-aud="problemTitle">Renting shouldn't cost you your <span class="g">future</span>.</h2>
+        <p class="body reveal" data-aud="problemBody">A chronic shortage of affordable homes, rising prices and stagnant wages have pushed a generation into precarious, often unhealthy housing — nowhere more sharply than London.</p>
+        <div class="stat-grid">
+          <div class="statc reveal"><div class="n" data-to="24" data-suffix="%">0%</div><div class="l">of Londoners live in poverty <em>after</em> paying for housing</div><div class="src">Trust for London, 2024</div></div>
+          <div class="statc reveal"><div class="n" data-to="8.2" data-dec="1" data-suffix="×">0×</div><div class="l">England house prices vs. the median wage in 2022</div><div class="src">House of Commons Library, 2023</div></div>
+          <div class="statc reveal"><div class="n" data-to="36" data-suffix="%">0%</div><div class="l">of the affordable homes we need are actually built each year</div><div class="src">RIBA, 2024</div></div>
+          <div class="statc reveal"><div class="n" data-to="57" data-suffix="%">0%</div><div class="l">of surveyed London residents have lived with damp &amp; mould</div><div class="src">Centre for London, 2023</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 · the concept -->
+    <section class="sec" id="concept">
+      <div class="wrap split">
+        <div>
+          <div class="eyebrow reveal">The concept</div>
+          <h2 class="h-lg reveal">A small home. A real <span class="c">community</span>.</h2>
+          <p class="body reveal">A tiny-home is a compact, low-carbon house. Cluster around eight of them with shared kitchen, laundry and garden, and you get a <b>tiny village</b> — close-knit, far lighter on the planet than a standard home.</p>
+          <p class="body reveal">Because the pods are light-touch and need no foundations, they can sit on paved, underused land and be fully removed later. It's been done in towns before — never in a dense city like London.</p>
+        </div>
+        <div class="feature-note reveal">
+          <span class="big">~8 homes</span>
+          a pilot village of tiny-homes plus communal facilities, grown from an existing neighbourhood so residents have a support network from day one.
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 · day in the life -->
+    <section class="sec band" id="day">
+      <div class="wrap">
+        <div class="eyebrow reveal">A day in the life</div>
+        <h2 class="h-lg reveal">Designed around <span class="g">your</span> day.</h2>
+        <p class="body reveal">Proposed first residents are students and young professionals. One flexible space flows between work, rest and life — with covered outdoor areas that keep you connected to the green around you.</p>
+        <div class="day-strip">
+          <div class="day-card reveal"><span class="t">06:00</span><div class="ico">🌅</div><div class="d">Wake to morning light</div></div>
+          <div class="day-card reveal"><span class="t">10:00</span><div class="ico">🪴</div><div class="d">Tend the shared garden</div></div>
+          <div class="day-card reveal"><span class="t">12:00</span><div class="ico">📖</div><div class="d">Read &amp; relax</div></div>
+          <div class="day-card reveal"><span class="t">15:00</span><div class="ico">💻</div><div class="d">Work from the pod</div></div>
+          <div class="day-card reveal"><span class="t">19:00</span><div class="ico">🍲</div><div class="d">Cook &amp; eat together</div></div>
+          <div class="day-card reveal"><span class="t">21:00</span><div class="ico">🌙</div><div class="d">Wind down at home</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 · how it works -->
+    <section class="sec" id="how">
+      <div class="wrap">
+        <div class="eyebrow reveal">How it works</div>
+        <h2 class="h-lg reveal">From empty plot to <span class="g">village</span>.</h2>
+        <div class="steps">
+          <div class="step reveal"><div class="num">1</div><h4>Select a site</h4><p>Find an underused, paved greyfield plot beside an established community.</p></div>
+          <div class="step reveal"><div class="num">2</div><h4>Green the site</h4><p>Add planters, allotments, benches and artwork with local people.</p></div>
+          <div class="step reveal"><div class="num">3</div><h4>Engage community</h4><p>Bring in water and power, plus shared kitchen, shower &amp; laundry pods.</p></div>
+          <div class="step reveal"><div class="num">4</div><h4>Bring in tinyhomes</h4><p>Roll the homes onto the site and adapt them to residents' needs.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 · standards / credibility -->
+    <section class="sec band" id="standards">
+      <div class="wrap">
+        <div class="eyebrow reveal">Built to a real standard</div>
+        <h2 class="h-lg reveal" data-aud="pilotTitle">A pilot, taken <span class="g">seriously</span>.</h2>
+        <p class="body reveal" data-aud="pilotBody">This is an early-stage proposal — and it's being designed against real safety, accessibility and London planning standards from the start.</p>
+        <div class="cards" data-aud="cards">
+          <div class="card reveal"><h4><span class="ic">🔥</span>Safe by design</h4><ul><li>Fire-resisting materials &amp; doors</li><li>Smoke alarms linked to a central point</li><li>Super-insulated, airtight build — warm, cool &amp; condensation-free</li></ul></div>
+          <div class="card reveal"><h4><span class="ic">♿</span>Built for everyone</h4><ul><li>Accessible doors (90 × 205 cm) &amp; level showers</li><li>Ramps at a gentle 6% max incline</li><li>≥ 1.2 m³ of storage per resident</li></ul></div>
+          <div class="card reveal"><h4><span class="ic">📐</span>Meets the London Plan</h4><ul><li>Tested against LSPBSL London Plan Guidance, 2024</li></ul><span class="badge">Internal amenity · 32.5 m² (req. 32)</span><span class="badge">External · 600+ m² (req. 8)</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 · ownership -->
+    <section class="sec" id="ownership">
+      <div class="wrap">
+        <div class="eyebrow reveal">Ownership</div>
+        <h2 class="h-lg reveal">Owned by the community, <span class="c">forever</span>.</h2>
+        <p class="body reveal">homefolk layers three proven models so homes stay genuinely affordable for generations — an approach championed by former UN housing rapporteur Prof. Raquel Rolnik.</p>
+        <div class="own-grid">
+          <div class="own reveal"><div class="tag">Community Land Trust</div><h4>CLT</h4><p>Separates the land from the building — residents pay only for the home, locking in affordability.</p></div>
+          <div class="own reveal"><div class="tag">Cooperative</div><h4>COOP</h4><p>Residents are shareholders with a secure right to live there for as long as they hold their share.</p></div>
+          <div class="own reveal"><div class="tag">Community Interest Company</div><h4>CIC</h4><p>A trusted company form that puts community benefit, not profit, first.</p></div>
+        </div>
+        <div class="precedent">
+          <div class="p reveal"><b>St Clements · Tower Hamlets</b>London's first-ever CLT site: 252 new homes, 35% genuinely affordable, by and for local people.</div>
+          <div class="p reveal"><b>LILAC · Leeds</b>A low-impact co-housing community of 20 straw-and-timber eco-homes around a shared common house.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 · voices -->
+    <section class="sec band" id="voices">
+      <div class="wrap voice">
+        <div class="eyebrow reveal" style="text-align:center">Voices</div>
+        <blockquote class="reveal">Living in a skip is a response to the frustration that the majority of my income went straight to rent.</blockquote>
+        <div class="who reveal">Harrison Marshall · Skip House resident &amp; architectural designer</div>
+      </div>
+    </section>
+
+    <!-- 8 · timeline -->
+    <section class="sec band-green" id="timeline">
+      <div class="wrap">
+        <div class="eyebrow reveal">The journey</div>
+        <h2 class="h-lg reveal">Concept today, <span class="g">homes</span> by 2030.</h2>
+        <div class="tl">
+          <div class="tl-item reveal"><div class="dot"></div><div class="yr">2021</div><div class="ev">homefolk forms in response to London's housing crisis</div></div>
+          <div class="tl-item reveal"><div class="dot"></div><div class="yr">2022</div><div class="ev">Becomes a Community Interest Company</div></div>
+          <div class="tl-item reveal"><div class="dot"></div><div class="yr">2023</div><div class="ev">Partners with Sheffield (architecture), Glasgow (law) &amp; Queen Mary (medicine)</div></div>
+          <div class="tl-item reveal"><div class="dot"></div><div class="yr">2024</div><div class="ev">Sheffield Live Projects &amp; Tower Hamlets site visit</div></div>
+          <div class="tl-item reveal"><div class="dot"></div><div class="yr">2025</div><div class="ev">Pilot Urban Room &amp; community engagement</div></div>
+          <div class="tl-item reveal"><div class="dot"></div><div class="yr">2026–27</div><div class="ev">Planning &amp; council approval</div></div>
+          <div class="tl-item reveal"><div class="dot"></div><div class="yr">2028</div><div class="ev">Construction of the pilot village begins</div></div>
+          <div class="tl-item reveal"><div class="dot"></div><div class="yr">2030</div><div class="ev">Residents move in</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9 · try the builder -->
+    <section class="sec" id="builder-cta">
+      <div class="wrap split">
+        <div>
+          <div class="eyebrow reveal">Try it yourself</div>
+          <h2 class="h-lg reveal">Build your own <span class="g">village</span>.</h2>
+          <p class="body reveal">Explore Hackney's real underused plots on the map, drop tiny-homes onto greyfield sites, then step inside to design the interior in 3D.</p>
+          <div class="hero-actions reveal"><button class="btn btn-primary" id="cta-builder">🏠 Open the pod builder →</button></div>
+        </div>
+        <div class="feature-note reveal" style="border-color:var(--coral)">
+          <span class="big">Map → place → design</span>
+          Powered by live OpenStreetMap data and street-level imagery — a playful way to picture a homefolk village on your own street.
+        </div>
+      </div>
+    </section>
+
+    <!-- 9b · why play (purpose behind the builder) -->
+    <section class="sec" id="why-play">
+      <div class="wrap" style="text-align:center;max-width:680px">
+        <div class="eyebrow reveal">Why this is playable</div>
+        <h2 class="h-lg reveal">Why play with the <span class="g">model</span>?</h2>
+        <p class="body reveal" style="margin:0 auto">Drag a home, choose a site, and test the trade-offs. The point is not to pretend housing is simple — it is to make the decisions visible.</p>
+      </div>
+    </section>
+
+    <!-- 9c · reflective prompts (audience-aware) -->
+    <section class="sec" id="prompts">
+      <div class="wrap" style="text-align:center">
+        <div class="eyebrow reveal">Questions worth sitting with</div>
+        <h2 class="h-lg reveal">Play, then <span class="g">question</span>.</h2>
+        <p class="body reveal" style="margin:0 auto 30px">No right answers — just the things worth asking before a village like this could work near you.</p>
+        <div class="prompt-grid" data-aud="prompts"></div>
+      </div>
+    </section>
+
+    <!-- 10 · get involved -->
+    <section class="sec band" id="involved">
+      <div class="wrap" style="text-align:center">
+        <div class="eyebrow reveal">Get involved</div>
+        <h2 class="h-lg reveal" data-aud="involvedTitle">Help us test the <span class="c">pilot</span>.</h2>
+        <p class="body reveal" style="margin:0 auto" data-aud="involvedBody">Students, researchers, neighbours and councils — if a community-owned village near you sounds worth trying, we'd love to hear from you.</p>
+        <div class="hero-actions reveal" style="justify-content:center">
+          <a class="btn btn-primary" href="https://homefolk.org.uk" target="_blank" rel="noopener" data-aud="involvedCta">Visit homefolk.org.uk →</a>
+          <button class="btn btn-ghost" id="share-btn" type="button">🔗 Share the project</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- footer -->
+    <footer class="foot">
+      <div class="wrap">
+        <div class="ft-top">
+          <div>
+            <img class="brand" src="qt=q_95.webp" alt="homefolk" />
+            <p class="ft-tag">Homefolk Housing UK CIC — a volunteer-led social enterprise.</p>
+          </div>
+          <div class="socials">
+            <a href="https://homefolk.org.uk" target="_blank" rel="noopener"><span class="ic">🌐</span>homefolk.org.uk</a>
+            <a href="https://www.linkedin.com/company/homefolk" target="_blank" rel="noopener"><span class="ic">in</span>homefolk</a>
+            <a href="https://instagram.com/homefolk_uk" target="_blank" rel="noopener"><span class="ic">📷</span>homefolk_uk</a>
+            <a href="https://youtube.com/@homefolk_uk" target="_blank" rel="noopener"><span class="ic">▶</span>homefolk_uk</a>
+          </div>
+        </div>
+        <div class="fine">
+          A concept demo — not finished housing. Stats cited from Trust for London, House of Commons Library, RIBA and Centre for London. Builder data: OpenStreetMap, Mapillary, Quaternius (CC0) &amp; the Art Institute of Chicago.
+        </div>
+      </div>
+    </footer>
+
+  </section>
+
+  <!-- ===================== MAP ===================== -->
+  <section id="map-screen" class="screen">
+    <div class="banner">
+      <div class="logo-wrap"><svg class="logo" viewBox="0 0 46 56"><use href="#aframe"/></svg></div>
+      <button class="btn btn-ghost btn-sm" id="back-to-info" style="margin-left:18px;background:#fff">← Back to homefolk</button>
+      <div class="title">build a village</div>
+    </div>
+    <div id="map"></div>
+
+    <div class="tray">
+      <h3>Drag a tiny-home onto a site</h3>
+      <p>homefolk only builds on <b>underused</b> land. Drag the pod onto a highlighted plot.</p>
+      <div class="pod-chip" id="pod-chip" draggable="true">
+        <div class="ico"><svg viewBox="0 0 48 44" width="36" height="33"><use href="#podglyph"/></svg></div>
+        <div><div class="t">Tiny-home pod</div><div class="d">drag me to the map</div></div>
+      </div>
+      <div class="village">Village: <b id="pod-count">0</b> pods placed</div>
+    </div>
+
+    <div class="legend" id="legend">
+      <h4>Underused sites</h4>
+      <div class="row"><span class="sw" style="background:var(--sky)"></span>Car park / greyfield<span class="cnt" id="c-parking">–</span></div>
+      <div class="row"><span class="sw" style="background:var(--maroon)"></span>Brownfield<span class="cnt" id="c-brownfield">–</span></div>
+      <div class="row"><span class="sw" style="background:var(--coral)"></span>Garages<span class="cnt" id="c-garages">–</span></div>
+      <div class="row"><span class="sw" style="background:var(--green)"></span>Unused construction<span class="cnt" id="c-construction">–</span></div>
+    </div>
+
+    <div class="map-hint"><b>Tip:</b> drop several pods to grow a village, then click a pod to step inside &amp; customise it.</div>
+
+    <div class="map-overlay" id="map-overlay">
+      <div class="spinner"></div>
+      <div id="map-overlay-text"><b>Finding underused sites in Hackney…</b><br/><span style="color:var(--ink-soft);font-size:13px">querying OpenStreetMap</span></div>
+    </div>
+  </section>
+
+  <!-- ===================== STUDIO ===================== -->
+  <section id="studio" class="screen">
+    <div class="banner">
+      <div class="logo-wrap"><svg class="logo" viewBox="0 0 46 56"><use href="#aframe"/></svg></div>
+      <button class="btn btn-ghost btn-sm" id="back-btn" style="margin-left:18px;background:#fff">← back to map</button>
+      <div class="title">the studio</div>
+    </div>
+
+    <div class="studio-body">
+      <!-- LEFT: 3D interior -->
+      <div class="studio-left">
+        <div id="three-host">
+          <div class="controls">
+            <div class="panel">
+              <h4>Surfaces</h4>
+              <div class="surf-tabs" id="surf-tabs">
+                <button data-surf="wall" class="active">Walls</button>
+                <button data-surf="floor">Floor</button>
+                <button data-surf="roof">Roof</button>
+              </div>
+              <div class="swatches" id="surf-swatches"></div>
+            </div>
+            <div class="panel">
+              <h4>Furniture · Quaternius (CC0)</h4>
+              <div class="furn-grid" id="furn-grid"></div>
+            </div>
+            <div class="panel">
+              <h4>Wall art · public domain</h4>
+              <button class="btn btn-ghost btn-sm" id="art-btn">Hang a painting</button>
+              <button class="btn btn-ghost btn-sm" id="art-shuffle" style="margin-top:6px">Shuffle</button>
+              <div id="art-cap" style="font-size:10px;color:var(--ink-soft);margin-top:6px;max-width:150px"></div>
+            </div>
+          </div>
+          <div class="sel-bar hidden" id="sel-bar">
+            <span class="lbl" id="sel-name">item</span>
+            <button id="rot-l" title="rotate left"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button>
+            <button id="rot-r" title="rotate right"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></button>
+            <button id="del-item" title="remove" style="background:#7a2e22"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+          </div>
+          <div class="studio-hint">drag furniture to move · click empty space to deselect · drag background to orbit</div>
+        </div>
+        <div class="studio-foot">
+          <span>Furniture: <a href="https://quaternius.com" target="_blank">Quaternius</a> CC0 via <a href="https://poly.pizza" target="_blank">Poly Pizza</a></span>
+          <span>Art: <a href="https://www.artic.edu/open-access" target="_blank">Art Institute of Chicago</a> · Met (public domain)</span>
+          <span>Street: <a href="https://www.mapillary.com" target="_blank">Mapillary</a></span>
+        </div>
+      </div>
+
+      <!-- RIGHT: street view -->
+      <div class="studio-right" id="studio-right">
+        <div class="right-head">
+          <button class="collapse-btn" id="mly-collapse" title="Hide street view" aria-expanded="true" aria-label="Toggle street view">›</button>
+          <span class="dot"></span><span id="mly-loc">Street view — this location</span>
+          <span class="tokbar">
+            <input id="mly-token" title="Mapillary access token (free)" />
+            <button class="btn btn-ghost btn-sm" id="mly-apply">set</button>
+          </span>
+        </div>
+        <div id="mly">
+          <div class="mly-empty" id="mly-empty">
+            <svg viewBox="0 0 24 24" width="46" height="46"><use href="#pinglyph"/></svg>
+            <p>Looking around this spot…</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ===================== AUDIENCE GATEWAY ===================== -->
+<div id="gateway" class="is-hidden" role="dialog" aria-modal="true" aria-labelledby="gate-title">
+  <div class="gate-inner">
+    <div class="gate-logo"><img class="brand" src="qt=q_95.webp" alt="homefolk" /></div>
+    <div class="gate-kicker">Choose your route<span class="gk-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20v-7"/><path d="M12 13c0-2.8 1.9-4.5 5.5-4.5C17.5 11.3 15.6 13 12 13z"/><path d="M12 15c0-2.4-1.7-4-5-4C7 13.4 8.7 15 12 15z"/></svg></span></div>
+    <h2 class="gate-title" id="gate-title">Housing, <span class="gate-grad">rebuilt</span><br/>one block at a time.</h2>
+    <p class="gate-sub">Same Homefolk story, three lenses. Pick the one that fits — the page reframes around you, and you can switch anytime.</p>
+    <div class="gate-cards">
+      <button class="gate-card" data-mode="student">
+        <span class="gc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="url(#iconGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 10a5 5 0 0 1 10 0v7.5A1.5 1.5 0 0 1 15.5 19h-7A1.5 1.5 0 0 1 7 17.5z"/><path d="M10 6.5V5.5a2 2 0 0 1 4 0v1"/><rect x="10" y="13" width="4" height="6" rx="1.2"/></svg></span>
+        <b>I'm a student</b>
+        <span class="gc-tag">New resident path</span>
+        <i>Could you live here?</i>
+        <span class="gc-arrow" aria-hidden="true">→</span>
+      </button>
+      <button class="gate-card" data-mode="partner">
+        <span class="gc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="url(#iconGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5 3 9l9 4 9-4-9-4z"/><path d="M7 11v3.5c0 1.4 2.2 2.5 5 2.5s5-1.1 5-2.5V11"/><path d="M21 9v4.5"/></svg></span>
+        <b>I'm an academic / partner</b>
+        <span class="gc-tag">Researcher path</span>
+        <i>A researched, measurable pilot.</i>
+        <span class="gc-arrow" aria-hidden="true">→</span>
+      </button>
+      <button class="gate-card" data-mode="council">
+        <span class="gc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="url(#iconGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9 12 4l9 5"/><path d="M5 9v8M9 9v8M15 9v8M19 9v8"/><path d="M4 17h16"/><path d="M3 20h18"/></svg></span>
+        <b>I'm from a council</b>
+        <span class="gc-tag">Planning team path</span>
+        <i>Low-risk, reversible borough pilot.</i>
+        <span class="gc-arrow" aria-hidden="true">→</span>
+      </button>
+    </div>
+    <button class="gate-skip" data-mode="default">I'm just curious — show me around →</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- ============================================================== *
+ *  APP LOGIC (Three.js via ES module + Leaflet/Mapillary globals)  *
+ * ============================================================== -->
+<script type="importmap">
+{ "imports": {
+  "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+}}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+/* ---------------- global state ---------------- */
+const App = {
+  screen:'landing',
+  pods:[],            // {id, latlng, type, interior:{wall,floor,roof,furniture:[],art}}
+  currentPod:null,
+  map:null, sitesLayer:null, sites:[],   // sites: {type, ring:[[lat,lng]...]}
+  mlyToken: localStorage.getItem('mlyToken') || 'MLY|26275324248758064|7819d63bee8179a083cdd76e20557967',
+};
+const HACKNEY = { s:51.515, w:-0.088, n:51.575, e:-0.015 };
+
+const SITE_STYLE = {
+  parking:      { color:'#7FB6D8', label:'Car park / greyfield' },
+  brownfield:   { color:'#6B3A2E', label:'Brownfield' },
+  garages:      { color:'#EE8259', label:'Garages' },
+  construction: { color:'#7AB35B', label:'Unused construction' },
+};
+
+const FURNITURE = [
+  {n:'Bed',        u:'https://static.poly.pizza/eac4fc76-244d-44ff-8848-ef0348379bf6.glb'},
+  {n:'Couch',      u:'https://static.poly.pizza/4e8fbbf3-9992-4068-8918-2126a0304127.glb'},
+  {n:'Chair',      u:'https://static.poly.pizza/84ecc6a3-2751-4f50-912a-b9f4ff033d7a.glb'},
+  {n:'Table',      u:'https://static.poly.pizza/c8fa18f9-e1e9-4aed-905d-cbc945cb44d9.glb'},
+  {n:'Stool',      u:'https://static.poly.pizza/6ee9a20a-99f8-4c05-a30c-248b102a16ec.glb'},
+  {n:'Shelf',      u:'https://static.poly.pizza/c0c34f64-3591-4f93-8665-dc9c3de5c73b.glb'},
+  {n:'Nightstand', u:'https://static.poly.pizza/deb08e3b-cd54-4252-b5b2-53f86f1c1d04.glb'},
+  {n:'Sink',       u:'https://static.poly.pizza/df5d73a4-4062-465c-8006-d7b691de66cf.glb'},
+  {n:'Fridge',     u:'https://static.poly.pizza/f4b6db1d-0eed-48b1-9a59-df879aaee393.glb'},
+  {n:'Oven',       u:'https://static.poly.pizza/9da28115-a156-414e-ab66-159052279eaf.glb'},
+  {n:'Plant',      u:'https://static.poly.pizza/c087694b-eda0-426e-a5d6-a1f9b9d57a28.glb'},
+  {n:'Cactus',     u:'https://static.poly.pizza/0642461e-5b49-4f04-b4e7-47b6bbb0153a.glb'},
+  {n:'Rug',        u:'https://static.poly.pizza/93588780-3405-40b7-acb4-9a87c88569f6.glb'},
+  {n:'Lamp',       u:'https://static.poly.pizza/194ee2b1-b5e2-4881-9dcd-2b2650b1c765.glb'},
+  {n:'Fireplace',  u:'https://static.poly.pizza/7841807d-cab9-46e2-95c2-1ca0bbee5736.glb'},
+];
+
+const SWATCHES = {
+  wall:['#E4EFD8','#CFE0BD','#FFFFFF','#7FB6D8','#EAD9C8','#1F1F1F'],
+  floor:['#C9A27A','#8a5a3c','#CFE0BD','#9aa0a6','#EE8259','#3a3a37'],
+  roof:['#EE8259','#6B3A2E','#7AB35B','#4a4a47','#7FB6D8','#d6cfc4'],
+};
+
+/* ---------------- helpers ---------------- */
+const $ = s => document.querySelector(s);
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('show'),2400); }
+
+function showScreen(name){
+  App.screen=name;
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  $('#'+(name==='map'?'map-screen':name)).classList.add('active');
+}
+
+/* point-in-polygon (ray cast) on [lat,lng] ring; pt={lat,lng} */
+function inRing(pt, ring){
+  let inside=false;
+  for(let i=0,j=ring.length-1;i<ring.length;j=i++){
+    const yi=ring[i][0],xi=ring[i][1],yj=ring[j][0],xj=ring[j][1];
+    const hit=((yi>pt.lat)!==(yj>pt.lat)) &&
+      (pt.lng < (xj-xi)*(pt.lat-yi)/(yj-yi)+xi);
+    if(hit) inside=!inside;
+  }
+  return inside;
+}
+function siteAt(latlng){
+  for(const s of App.sites){ if(inRing(latlng,s.ring)) return s; }
+  return null;
+}
+
+/* ============================================================== *
+ *  LANDING — pod-builder link + scroll motion                    *
+ * ============================================================== */
+function openBuilder(){ showScreen('map'); initMap(); }
+['#nav-builder','#hero-builder','#cta-builder'].forEach(sel=>{
+  const el = $(sel); if(el) el.onclick = openBuilder;
+});
+
+const reduceMotion = matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+/* count a stat number up to its data-to target */
+function countUp(el){
+  const to = parseFloat(el.dataset.to);
+  const dec = parseInt(el.dataset.dec||'0',10);
+  const suffix = el.dataset.suffix||'';
+  if(reduceMotion || isNaN(to)){ el.textContent = to.toFixed(dec)+suffix; return; }
+  const dur = 1100, t0 = performance.now();
+  (function tick(now){
+    const p = Math.min(1,(now-t0)/dur);
+    const eased = 1-Math.pow(1-p,3);
+    el.textContent = (to*eased).toFixed(dec)+suffix;
+    if(p<1) requestAnimationFrame(tick);
+    else el.textContent = to.toFixed(dec)+suffix;
+  })(t0);
+}
+
+/* always start the story at the top (ignore browser scroll restoration) */
+if('scrollRestoration' in history) history.scrollRestoration='manual';
+const _landing = $('#landing');
+const toTop = ()=>{ if(_landing) _landing.scrollTop=0; };
+toTop(); addEventListener('load', toTop);
+
+function revealEl(el){
+  if(el.classList.contains('in')) return;
+  el.classList.add('in');
+  el.querySelectorAll?.('[data-to]').forEach(countUp);
+  if(el.matches?.('[data-to]')) countUp(el);
+}
+
+/* deterministic reveal: show anything in or above the viewport, on load + scroll */
+function checkReveals(){
+  if(!_landing) return;
+  const vh = _landing.clientHeight, base = _landing.getBoundingClientRect().top;
+  document.querySelectorAll('#landing .reveal:not(.in)').forEach(el=>{
+    if(el.getBoundingClientRect().top - base < vh*0.9) revealEl(el);
+  });
+}
+let _rafR=0;
+const onScrollReveal = ()=>{ if(_rafR) return; _rafR=requestAnimationFrame(()=>{ _rafR=0; checkReveals(); }); };
+if(_landing) _landing.addEventListener('scroll', onScrollReveal, {passive:true});
+addEventListener('load', ()=>{ toTop(); checkReveals(); });
+requestAnimationFrame(checkReveals);
+
+/* ============================================================== *
+ *  MAP                                                           *
+ * ============================================================== */
+function initMap(){
+  if(App.map){ App.map.invalidateSize(); return; }
+  const map = L.map('map',{ zoomControl:true, minZoom:13, maxZoom:19 });
+  App.map = map;
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
+    subdomains:'abcd', maxZoom:19,
+    attribution:'© OpenStreetMap contributors © CARTO'
+  }).addTo(map);
+  const b = L.latLngBounds([HACKNEY.s,HACKNEY.w],[HACKNEY.n,HACKNEY.e]);
+  map.fitBounds(b);
+  map.setMaxBounds(b.pad(0.15));
+  App.sitesLayer = L.layerGroup().addTo(map);
+  setTimeout(()=>map.invalidateSize(),60);
+  wireDrop(map);
+  loadSites();
+}
+
+/* drag-and-drop pod chip onto the map */
+$('#pod-chip').addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain','pod');
+  e.dataTransfer.effectAllowed='copy'; });
+function wireDrop(map){
+  const el = map.getContainer();
+  el.addEventListener('dragover', e=>{ e.preventDefault(); e.dataTransfer.dropEffect='copy'; });
+  el.addEventListener('drop', e=>{
+    e.preventDefault();
+    const latlng = map.mouseEventToLatLng(e);
+    const site = siteAt(latlng);
+    if(!site){ toast('homefolk builds on underused sites — drop onto a highlighted plot'); return; }
+    placePod(latlng, site.type);
+  });
+}
+
+function placePod(latlng, type){
+  const id = 'pod'+(App.pods.length+1);
+  const pod = { id, latlng:{lat:latlng.lat,lng:latlng.lng}, type,
+    interior:{ wall:'#E4EFD8', floor:'#C9A27A', roof:'#EE8259', furniture:[], art:null } };
+  App.pods.push(pod);
+  const icon = L.divIcon({ className:'', html:'<div class="pod-marker"><svg viewBox="0 0 48 44" width="34" height="31"><use href="#podglyph"/></svg></div>',
+    iconSize:[34,31], iconAnchor:[17,30] });
+  const m = L.marker(latlng,{icon}).addTo(App.map);
+  m.on('click',()=>openStudio(pod));
+  pod._marker=m;
+  $('#pod-count').textContent = App.pods.length;
+  toast('Pod placed on '+ (SITE_STYLE[type]?.label||type) +' — click it to step inside');
+}
+
+/* fetch underused candidate sites from Overpass — per-category, in parallel,
+   with endpoint fallback + per-request timeout, rendered incrementally so one
+   slow category never blocks the others (the old single combined query 504'd). */
+// Global Overpass mirrors only. private.coffee is first because it also returns
+// CORS for a null origin (works when the file is opened directly via file://).
+// (overpass.osm.ch was removed — it serves a Switzerland-only extract and silently
+// returns 0 elements for London.)
+const OVERPASS_EPS = [
+  'https://overpass.private.coffee/api/interpreter',
+  'https://overpass-api.de/api/interpreter',
+  'https://overpass.kumi.systems/api/interpreter',
+];
+async function fetchOverpass(query){
+  for(const ep of OVERPASS_EPS){
+    try{
+      const ctrl=new AbortController();
+      const to=setTimeout(()=>ctrl.abort(),30000);
+      const r=await fetch(ep,{ method:'POST', body:'data='+encodeURIComponent(query), signal:ctrl.signal });
+      clearTimeout(to);
+      if(!r.ok) continue;
+      const j=await r.json();
+      if(j && j.elements) return j.elements;
+    }catch(e){ /* try next endpoint */ }
+  }
+  return null;
+}
+async function loadSites(){
+  const bbox = `${HACKNEY.s},${HACKNEY.w},${HACKNEY.n},${HACKNEY.e}`;
+  // Two requests only (concurrency of 4 gets rate-limited by community endpoints).
+  // `building=garage` is deliberately excluded — matching every individual lock-up
+  // exploded the query into a 504 timeout. Light group runs first so plots appear fast.
+  const light = `[out:json][timeout:40];(`
+    + `way["landuse"="brownfield"](${bbox});`
+    + `way["landuse"="garages"](${bbox});`
+    + `way["building"="garages"](${bbox});`
+    + `way["landuse"="construction"](${bbox});`
+    + `);out geom;`;
+  const heavy = `[out:json][timeout:50];(way["amenity"="parking"](${bbox}););out geom;`;
+  let done=0, any=false;
+  const run = qq => fetchOverpass(qq).then(els=>{
+    done++;
+    if(els && els.length){ any=true; renderSites(els); }
+    if(any) $('#map-overlay').classList.add('hidden');
+    if(done===2){
+      $('#map-overlay').classList.add('hidden');
+      if(!any) showSitesError('Overpass endpoints are busy');
+      else if(App.sites.length===0) toast('No tagged sites found here right now');
+    }
+  });
+  run(light);
+  run(heavy);
+}
+
+function classify(tags){
+  if(!tags) return null;
+  if(tags.amenity==='parking') return 'parking';
+  if(tags.landuse==='brownfield') return 'brownfield';
+  if(tags.landuse==='garages'||tags.building==='garages'||tags.building==='garage') return 'garages';
+  if(tags.landuse==='construction') return 'construction';
+  return null;
+}
+
+const siteCounts={parking:0,brownfield:0,garages:0,construction:0};
+function renderSites(elements){
+  for(const el of elements){
+    if(el.type!=='way' || !el.geometry || el.geometry.length<3) continue;
+    const type = classify(el.tags); if(!type) continue;
+    const ring = el.geometry.map(p=>[p.lat,p.lon]);
+    App.sites.push({type, ring});
+    siteCounts[type]++;
+    const st = SITE_STYLE[type];
+    L.polygon(ring,{ color:st.color, weight:1.6, fillColor:st.color, fillOpacity:.6,
+      interactive:false }).addTo(App.sitesLayer);
+  }
+  $('#c-parking').textContent=siteCounts.parking;
+  $('#c-brownfield').textContent=siteCounts.brownfield;
+  $('#c-garages').textContent=siteCounts.garages;
+  $('#c-construction').textContent=siteCounts.construction;
+}
+
+function showSitesError(msg){
+  $('#map-overlay').innerHTML =
+    `<div style="max-width:340px;text-align:center">
+       <svg viewBox="0 0 24 24" width="40" height="40"><use href="#pinglyph"/></svg>
+       <p style="font-weight:700;margin:8px 0 4px">Couldn't load Hackney sites</p>
+       <p style="color:var(--ink-soft);font-size:13px;margin:0 0 14px">OpenStreetMap's Overpass API is busy (${msg||'network error'}).</p>
+       <button class="btn btn-primary" id="retry-sites">Retry</button>
+     </div>`;
+  $('#retry-sites').onclick = ()=>{
+    $('#map-overlay').innerHTML='<div class="spinner"></div><div><b>Finding underused sites…</b></div>';
+    loadSites();
+  };
+}
+
+/* ============================================================== *
+ *  STUDIO — 3D interior                                          *
+ * ============================================================== */
+const TD = {};   // three.js scene objects, lazily created
+function ensureThree(){
+  if(TD.renderer) return;
+  const host = $('#three-host');
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color('#eef1ea');
+  const camera = new THREE.PerspectiveCamera(50,1,0.1,100);
+  camera.position.set(0,3.1,7.6);
+  const renderer = new THREE.WebGLRenderer({antialias:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  host.appendChild(renderer.domElement);
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.target.set(0,1.55,0);
+  controls.maxPolarAngle = Math.PI/2.05;
+  controls.minDistance=3.5; controls.maxDistance=13;
+  controls.enablePan=false;
+
+  // lights — bright even fill so shaded sides aren't dark; gentle directional for slight modelling
+  scene.add(new THREE.HemisphereLight('#ffffff','#e6ebe0',2.3));
+  const dir = new THREE.DirectionalLight('#fff7ec',0.45);
+  dir.position.set(4,8,6); scene.add(dir);
+
+  // pod shell  (W=6 along x, D=4 along z, H=2.6) — front (+z) open dollhouse
+  const W=6,D=4,H=2.6;
+  const mat = c => new THREE.MeshStandardMaterial({color:c,roughness:.95,side:THREE.DoubleSide});
+  const floorMat=mat('#C9A27A'), wallMat=mat('#E4EFD8'), roofMat=mat('#EE8259');
+
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(W,D), floorMat);
+  floor.rotation.x=-Math.PI/2; scene.add(floor);
+  TD.floor=floor;
+
+  const wallGeoBack = new THREE.PlaneGeometry(W,H);
+  const back = new THREE.Mesh(wallGeoBack, wallMat); back.position.set(0,H/2,-D/2); scene.add(back);
+  const left = new THREE.Mesh(new THREE.PlaneGeometry(D,H), wallMat);
+  left.rotation.y=Math.PI/2; left.position.set(-W/2,H/2,0); scene.add(left);
+  const right = new THREE.Mesh(new THREE.PlaneGeometry(D,H), wallMat);
+  right.rotation.y=-Math.PI/2; right.position.set(W/2,H/2,0); scene.add(right);
+  TD.walls=[back,left,right];
+
+  // gable roof: ridge runs along z (front↔back) at x=0, height H+1.1;
+  // the two panels slope down from the ridge to the side walls (x=±W/2).
+  const RH=H+1.1;
+  const quad = (a,b,c,d) => {            // flat panel from 4 world-space corners
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(
+      [...a,...b,...c, ...a,...c,...d], 3));
+    g.computeVertexNormals();
+    return g;
+  };
+  const roofW = new THREE.Mesh(
+    quad([0,RH,-D/2],[0,RH,D/2],[-W/2,H,D/2],[-W/2,H,-D/2]), roofMat);
+  scene.add(roofW);
+  const roofE = new THREE.Mesh(
+    quad([0,RH,-D/2],[0,RH,D/2],[ W/2,H,D/2],[ W/2,H,-D/2]), roofMat);
+  scene.add(roofE);
+  // gable triangle closing the back wall, apex at the ridge
+  const tri = new THREE.Shape();
+  tri.moveTo(-W/2,0); tri.lineTo(W/2,0); tri.lineTo(0,RH-H); tri.lineTo(-W/2,0);
+  const gable = new THREE.Mesh(new THREE.ShapeGeometry(tri), wallMat);
+  gable.position.set(0,H,-D/2); scene.add(gable);
+  TD.roof=[roofW,roofE]; TD.gable=gable;
+
+  // art frame on back wall
+  const frame = new THREE.Mesh(new THREE.PlaneGeometry(1.4,1.0),
+     new THREE.MeshStandardMaterial({color:'#2a2a28'}));
+  frame.position.set(0,1.5,-D/2+0.03); frame.visible=false; scene.add(frame);
+  const canvas = new THREE.Mesh(new THREE.PlaneGeometry(1.3,0.9),
+     new THREE.MeshBasicMaterial({color:'#fff'}));
+  canvas.position.set(0,1.5,-D/2+0.04); canvas.visible=false; scene.add(canvas);
+  TD.frame=frame; TD.artCanvas=canvas;
+
+  TD.scene=scene; TD.camera=camera; TD.renderer=renderer; TD.controls=controls;
+  TD.items=[]; TD.bounds={W,H,D};
+  TD.raycaster=new THREE.Raycaster(); TD.pointer=new THREE.Vector2();
+  TD.loader=new GLTFLoader();
+  TD.selected=null; TD.dragging=null;
+
+  // resize
+  const ro = new ResizeObserver(()=>resizeThree());
+  ro.observe(host);
+  resizeThree();
+  wireThreePointer();
+
+  (function loop(){ requestAnimationFrame(loop); controls.update(); renderer.render(scene,camera); })();
+}
+function resizeThree(){
+  if(!TD.renderer) return;
+  const host=$('#three-host'); const w=host.clientWidth,h=host.clientHeight;
+  if(w===0||h===0) return;
+  TD.renderer.setSize(w,h);   // updateStyle on: keep canvas CSS size == host, not the 2× pixel buffer
+  TD.camera.aspect=w/h; TD.camera.updateProjectionMatrix();
+}
+
+/* surface recolor */
+function applySurface(kind,color){
+  if(!TD.renderer) return;
+  if(kind==='wall'){ TD.walls.forEach(m=>m.material.color.set(color)); TD.gable.material.color.set(color); }
+  if(kind==='floor'){ TD.floor.material.color.set(color); }
+  if(kind==='roof'){ TD.roof.forEach(m=>m.material.color.set(color)); }
+  if(App.currentPod) App.currentPod.interior[kind]=color;
+}
+
+/* load + add a furniture model, drop onto floor, optional saved transform */
+function addFurniture(item, saved){
+  ensureThree();
+  TD.loader.load(item.u, gltf=>{
+    const obj = gltf.scene;
+    // normalise: place base on floor, cap size so nothing is absurd
+    const box=new THREE.Box3().setFromObject(obj);
+    const size=new THREE.Vector3(); box.getSize(size);
+    const maxXZ=Math.max(size.x,size.z)||1;
+    let scale=1;
+    if(maxXZ>2.6) scale=2.6/maxXZ;        // shrink oversized
+    obj.scale.setScalar(scale);
+    obj.updateMatrixWorld(true);
+    const b2=new THREE.Box3().setFromObject(obj);
+    obj.position.y -= b2.min.y;            // sit on floor
+    if(saved){ obj.position.set(saved.x,saved.y,saved.z); obj.rotation.y=saved.ry; if(saved.s) obj.scale.setScalar(saved.s); }
+    else { obj.position.x=(Math.random()-0.5)*2.4; obj.position.z=(Math.random()-0.3)*1.6; }
+    obj.traverse(n=>{ if(n.isMesh){ n.castShadow=true; n.userData.pickRoot=obj; }});
+    obj.userData.item=item;
+    TD.scene.add(obj); TD.items.push(obj);
+    if(!saved) selectItem(obj);
+    saveFurniture();
+  }, undefined, err=>{
+    console.warn('model load failed',item.u,err); toast('Could not load '+item.n+' model');
+  });
+}
+function saveFurniture(){
+  if(!App.currentPod) return;
+  App.currentPod.interior.furniture = TD.items.map(o=>({
+    u:o.userData.item.u, n:o.userData.item.n,
+    x:o.position.x,y:o.position.y,z:o.position.z, ry:o.rotation.y, s:o.scale.x
+  }));
+}
+
+/* selection + drag-to-move on floor plane */
+function selectItem(obj){
+  TD.selected=obj;
+  const bar=$('#sel-bar');
+  if(obj){ bar.classList.remove('hidden'); $('#sel-name').textContent=obj.userData.item.n; }
+  else bar.classList.add('hidden');
+}
+function wireThreePointer(){
+  const dom=TD.renderer.domElement;
+  const floorPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0);
+  function setPointer(e){ const r=dom.getBoundingClientRect();
+    TD.pointer.x=((e.clientX-r.left)/r.width)*2-1;
+    TD.pointer.y=-((e.clientY-r.top)/r.height)*2+1; }
+  let downPos=null;
+  dom.addEventListener('pointerdown', e=>{
+    setPointer(e); downPos={x:e.clientX,y:e.clientY};
+    TD.raycaster.setFromCamera(TD.pointer,TD.camera);
+    const hit=TD.raycaster.intersectObjects(TD.items,true)[0];
+    if(hit){
+      let root=hit.object; while(root && !root.userData.item) root=root.parent;
+      if(root){ selectItem(root); TD.dragging=root; TD.controls.enabled=false; }
+    }
+  });
+  dom.addEventListener('pointermove', e=>{
+    if(!TD.dragging) return;
+    setPointer(e); TD.raycaster.setFromCamera(TD.pointer,TD.camera);
+    const p=new THREE.Vector3();
+    TD.raycaster.ray.intersectPlane(floorPlane,p);
+    if(p){ const lim=TD.bounds;
+      p.x=Math.max(-lim.W/2+0.3,Math.min(lim.W/2-0.3,p.x));
+      p.z=Math.max(-lim.D/2+0.3,Math.min(lim.D/2-0.3,p.z));
+      TD.dragging.position.x=p.x; TD.dragging.position.z=p.z; }
+  });
+  function endDrag(e){
+    if(TD.dragging){ saveFurniture(); }
+    TD.dragging=null; TD.controls.enabled=true;
+    // click on empty space → deselect
+    if(downPos && e && Math.hypot(e.clientX-downPos.x,e.clientY-downPos.y)<4){
+      setPointer(e); TD.raycaster.setFromCamera(TD.pointer,TD.camera);
+      const hit=TD.raycaster.intersectObjects(TD.items,true)[0];
+      if(!hit) selectItem(null);
+    }
+    downPos=null;
+  }
+  dom.addEventListener('pointerup', endDrag);
+}
+$('#rot-l').onclick=()=>{ if(TD.selected){TD.selected.rotation.y+=Math.PI/8;saveFurniture();} };
+$('#rot-r').onclick=()=>{ if(TD.selected){TD.selected.rotation.y-=Math.PI/8;saveFurniture();} };
+$('#del-item').onclick=()=>{ if(TD.selected){ TD.scene.remove(TD.selected);
+  TD.items=TD.items.filter(o=>o!==TD.selected); selectItem(null); saveFurniture(); } };
+
+/* wall art from Art Institute of Chicago (Met fallback) */
+async function hangArt(){
+  ensureThree();
+  $('#art-cap').textContent='loading…';
+  let img=null, cap='';
+  try{
+    const page=1+Math.floor(Math.random()*40);
+    const r=await fetch(`https://api.artic.edu/api/v1/artworks/search?query[term][is_public_domain]=true&fields=id,title,image_id,artist_title&limit=25&page=${page}`);
+    const j=await r.json();
+    const cand=(j.data||[]).filter(d=>d.image_id);
+    if(cand.length){ const a=cand[(Math.random()*cand.length)|0];
+      img=`https://www.artic.edu/iiif/2/${a.image_id}/full/600,/0/default.jpg`;
+      cap=`${a.title}${a.artist_title?' — '+a.artist_title:''}`; }
+  }catch(e){ /* fall through to Met */ }
+  if(!img){
+    try{
+      const ids=[436535,459123,437853,435809,459027,438722,11417,210191];
+      const id=ids[(Math.random()*ids.length)|0];
+      const r=await fetch(`https://collectionapi.metmuseum.org/public/collection/v1/objects/${id}`);
+      const j=await r.json();
+      if(j.primaryImageSmall){ img=j.primaryImageSmall; cap=`${j.title} — ${j.artistDisplayName||'unknown'}`; }
+    }catch(e){}
+  }
+  if(!img){ $('#art-cap').textContent='couldn’t load art — try again'; return; }
+  new THREE.TextureLoader().setCrossOrigin('anonymous').load(img, tex=>{
+    if(tex.colorSpace!==undefined) tex.colorSpace=THREE.SRGBColorSpace;
+    const ar=(tex.image.width||4)/(tex.image.height||3);
+    const h=1.0, w=Math.min(1.9,h*ar);
+    TD.artCanvas.geometry.dispose();
+    TD.artCanvas.geometry=new THREE.PlaneGeometry(w,h);
+    TD.frame.geometry.dispose();
+    TD.frame.geometry=new THREE.PlaneGeometry(w+0.12,h+0.12);
+    TD.artCanvas.material.map=tex; TD.artCanvas.material.color.set('#fff');
+    TD.artCanvas.material.needsUpdate=true;
+    TD.artCanvas.visible=true; TD.frame.visible=true;
+    $('#art-cap').textContent=cap;
+    if(App.currentPod) App.currentPod.interior.art={img,cap};
+  }, undefined, ()=>{ $('#art-cap').textContent='image blocked — shuffle again'; });
+}
+$('#art-btn').onclick=hangArt;
+$('#art-shuffle').onclick=hangArt;
+
+/* build control palettes once */
+function buildPalettes(){
+  // furniture
+  const fg=$('#furn-grid');
+  if(!fg.childElementCount){
+    FURNITURE.forEach(it=>{ const b=document.createElement('button');
+      b.innerHTML=`<span class="nm">${it.n}</span>`;
+      b.onclick=()=>addFurniture(it); fg.appendChild(b); });
+  }
+  // surface swatches
+  const tabs=$('#surf-tabs'); const sw=$('#surf-swatches');
+  function renderSw(kind){ sw.innerHTML='';
+    SWATCHES[kind].forEach(c=>{ const d=document.createElement('div');
+      d.className='sw'; d.style.background=c; d.title=c;
+      d.onclick=()=>{ applySurface(kind,c);
+        sw.querySelectorAll('.sw').forEach(x=>x.classList.remove('active')); d.classList.add('active'); };
+      sw.appendChild(d); }); }
+  if(!tabs._wired){
+    tabs.querySelectorAll('button').forEach(btn=>{ btn.onclick=()=>{
+      tabs.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active'); renderSw(btn.dataset.surf); }; });
+    tabs._wired=true;
+  }
+  renderSw('wall');
+}
+
+/* open the studio for a pod */
+function openStudio(pod){
+  App.currentPod=pod;
+  showScreen('studio');
+  ensureThree();
+  buildPalettes();
+  // reset scene furniture/art to this pod's saved state
+  TD.items.forEach(o=>TD.scene.remove(o)); TD.items=[]; selectItem(null);
+  TD.frame.visible=false; TD.artCanvas.visible=false; $('#art-cap').textContent='';
+  applySurface('wall',pod.interior.wall);
+  applySurface('floor',pod.interior.floor);
+  applySurface('roof',pod.interior.roof);
+  (pod.interior.furniture||[]).forEach(f=>addFurniture({n:f.n,u:f.u},f));
+  setTimeout(resizeThree,50);
+  // street view
+  $('#mly-loc').textContent='Street view — '+(SITE_STYLE[pod.type]?.label||pod.type);
+  loadStreetView(pod.latlng);
+}
+$('#back-btn').onclick=()=>{ showScreen('map'); setTimeout(()=>App.map&&App.map.invalidateSize(),60); };
+$('#back-to-info').onclick=()=>{ showScreen('landing'); };
+
+/* ============================================================== *
+ *  STREET VIEW (Mapillary)                                       *
+ * ============================================================== */
+$('#mly-token').value = App.mlyToken;
+$('#mly-apply').onclick=()=>{ App.mlyToken=$('#mly-token').value.trim();
+  localStorage.setItem('mlyToken',App.mlyToken);
+  if(App.currentPod) loadStreetView(App.currentPod.latlng); };
+
+/* collapse / expand the street-view panel (3D fills the freed space) */
+$('#mly-collapse').onclick=()=>{
+  const collapsed = $('#studio-right').classList.toggle('collapsed');
+  const btn = $('#mly-collapse');
+  btn.textContent = collapsed ? '‹' : '›';
+  btn.title = collapsed ? 'Show street view' : 'Hide street view';
+  btn.setAttribute('aria-expanded', String(!collapsed));
+  setTimeout(resizeThree,280);  // re-fit the canvas after the width transition
+};
+
+async function nearestImage(latlng, d){
+  const bbox=[latlng.lng-d,latlng.lat-d,latlng.lng+d,latlng.lat+d].join(',');
+  const url=`https://graph.mapillary.com/images?access_token=${encodeURIComponent(App.mlyToken)}`
+    +`&fields=id,computed_geometry&bbox=${bbox}&limit=1`;
+  const r=await fetch(url); if(!r.ok) throw new Error('HTTP '+r.status);
+  const j=await r.json(); return (j.data&&j.data[0])?j.data[0].id:null;
+}
+function showMlyEmpty(html){
+  if(App._mly){ try{App._mly.remove();}catch(e){} App._mly=null; }
+  $('#mly').innerHTML=`<div class="mly-empty"><svg viewBox="0 0 24 24" width="46" height="46"><use href="#pinglyph"/></svg><p>${html}</p></div>`;
+}
+async function loadStreetView(latlng){
+  showMlyEmpty('Looking around this spot…');
+  let id=null;
+  try{
+    id = await nearestImage(latlng,0.0009) || await nearestImage(latlng,0.0025);
+  }catch(e){
+    showMlyEmpty('Street view unavailable.<br/>Check the Mapillary token (top-right).'); return;
+  }
+  if(!id){ showMlyEmpty('No street imagery here yet.<br/>Mapillary is crowd-sourced — try a pod on a busier road.'); return; }
+  $('#mly').innerHTML='';
+  try{
+    if(App._mly){ try{App._mly.remove();}catch(e){} }
+    App._mly = new mapillary.Viewer({ accessToken:App.mlyToken, container:'mly', imageId:id });
+  }catch(e){ showMlyEmpty('Could not start the street viewer.'); }
+}
+
+/* re-render map on resize */
+addEventListener('resize',()=>{ if(App.screen==='studio') resizeThree(); });
+
+/* dev bypass — open the studio directly with a demo pod, skipping the map.
+   Add #studio to the URL (e.g. homefolk-builder.html#studio). */
+if(location.hash==='#studio'){
+  const openDemo=()=>openStudio({ id:'demo', latlng:{lat:51.545,lng:-0.055}, type:'parking',
+    interior:{ wall:'#E4EFD8', floor:'#C9A27A', roof:'#EE8259', furniture:[], art:null } });
+  // run after this module finishes (avoids a readyState/load race with the importmap)
+  setTimeout(openDemo, 0);
+}
+</script>
+
+<!-- ============================================================== *
+ *  AUDIENCE GATEWAY — three lenses over one shared story          *
+ *  (plain script: DOM-only, fully isolated from the Three module) *
+ * ============================================================== -->
+<script>
+(function(){
+  var KEY = 'hf-audience';
+  var MODES = ['student','partner','council'];
+
+  /* ---------------------------------------------------------------- *
+   *  AUDIENCE ROUTES ARE DATA-DRIVEN — add more "paths" here.
+   *
+   *  Each lens in AUDIENCE below is one route. To add a new path
+   *  (e.g. 'investor', 'neighbour'):
+   *    1. Add a key to AUDIENCE with the same shape as the others:
+   *         label, heroTitle, heroLead, heroCta {text,href},
+   *         problemTitle, problemBody, pilotTitle, pilotBody,
+   *         recoTitle, recoLead, involvedTitle, involvedBody,
+   *         involvedCta {text,href}, prompts:[…], cards:[…].
+   *    2. Add the same key to the MODES array above.
+   *    3. Add a gateway card in the markup:
+   *         <button class="gate-card" data-mode="yourkey"> … </button>
+   *  Everything (hero, problem, pilot, cards, reco, CTA, prompts) then
+   *  reframes automatically via applyAudience(). DEFAULT_PROMPTS below
+   *  covers the no-lens / "just curious" case.
+   * ---------------------------------------------------------------- */
+  var DEFAULT_PROMPTS = [
+    'What would make you feel safe living here?',
+    'Would your council approve this site?',
+    'What evidence would you need before backing the pilot?',
+    'Would neighbours see this as a threat or a benefit?',
+    'What should be measured after six months?'
+  ];
+
+  /* one data object — copy per audience. Titles/leads carry the same
+     <span class="g">/<span class="c"> accent markup as the default HTML. */
+  var AUDIENCE = {
+    student: {
+      label: 'Student view',
+      recoTitle: 'Picked for future <span class="g">residents</span>.',
+      recoLead: 'Everything you’d want before deciding whether village life is for you — no document overload.',
+      heroTitle: 'A better way to <span class="g">live</span> as a student.',
+      heroLead: 'Rent eats your income, the good flats are taken, and it can feel lonely out here. <b>homefolk</b> turns forgotten car parks into small, affordable, low-carbon villages — designed around student life, built with students, for students.',
+      heroCta: { text: 'See what living here could feel like →', href: 'https://homefolk.org.uk' },
+      problemTitle: 'Renting shouldn’t cost you your <span class="g">whole life</span>.',
+      problemBody: 'Sky-high rent, damp rooms and isolation have become the default for a generation of students and young renters in London. It doesn’t have to be the only option.',
+      pilotTitle: 'A home built around <span class="g">student life</span>.',
+      pilotBody: 'Affordable, social and low-carbon — designed to real safety, accessibility and London planning standards so it’s somewhere you could genuinely settle, not just survive.',
+      involvedTitle: 'Help us test the <span class="c">pilot</span>.',
+      involvedBody: 'Want to live differently — not just more cheaply? If a community-owned student village in London sounds worth trying, come help us prove it can work.',
+      involvedCta: { text: 'Register interest in testing the pilot →', href: 'https://homefolk.org.uk' },
+      prompts: [
+        'What would make you feel safe living here?',
+        'Would your council approve this site?'
+      ],
+      cards: [
+        { ico:'💚', title:'Affordable & social', items:['Rent that leaves you room to live','Shared kitchen, laundry & garden','A built-in community from day one'] },
+        { ico:'🛡️', title:'Safe & comfortable', items:['Warm, airtight, condensation-free homes','Good lighting & a watched-over village','Accessible, step-free design'] },
+        { ico:'🌱', title:'Low-carbon living', items:['Compact, light-touch homes','On-site greenery & growing space','Far lighter on the planet than a flat'] }
+      ]
+    },
+    partner: {
+      label: 'Partner view',
+      recoTitle: 'Picked for <span class="g">research partners</span>.',
+      recoLead: 'The evidence and materials that matter for evaluating, validating and backing the pilot.',
+      heroTitle: 'A researched model, ready to <span class="g">measure</span>.',
+      heroLead: 'The architectural design, layered legal model and site strategy for community-owned, low-carbon tiny-home villages are <b>done</b>. The missing piece is institutional backing to deliver — and study — a real Hackney pilot.',
+      heroCta: { text: 'Explore the evidence base →', href: 'https://homefolk.org.uk' },
+      problemTitle: 'A housing crisis that can be <span class="g">measured</span>.',
+      problemBody: 'Affordability, health and climate failures in London housing are well-evidenced. homefolk reframes them as a researchable question: can a community-owned model demonstrably do better?',
+      pilotTitle: 'A real-world <span class="g">demonstrator</span> for research.',
+      pilotBody: 'A deliberately legible first build — designed against real safety, accessibility and London Plan standards — so housing, health, climate and community outcomes can be evaluated, validated and co-authored.',
+      involvedTitle: 'Become a <span class="c">research partner</span>.',
+      involvedBody: 'The design, legal model and site strategy exist — now the pilot needs institutional backing. Lend research credibility, co-author the proposal, or host a workstream.',
+      involvedCta: { text: 'Discuss a research workstream →', href: 'mailto:admin@homefolk.org.uk' },
+      prompts: [
+        'What evidence would you need before backing the pilot?',
+        'What should be measured after six months?'
+      ],
+      cards: [
+        { ico:'📚', title:'An evidence base', items:['Legal, architectural & site-strategy studies','Costed pilot design','Outdated figures flagged, primary sources clear'] },
+        { ico:'📈', title:'Measurable impact', items:['A live demonstrator, not a concept','Housing, health, climate & community metrics','Findings designed to scale'] },
+        { ico:'🎓', title:'Institutional credibility', items:['Co-authored funding proposals','Framed as research, not development','University & NGO collaborators engaged'] }
+      ]
+    },
+    council: {
+      label: 'Council view',
+      recoTitle: 'Picked for your <span class="g">borough team</span>.',
+      recoLead: 'The delivery, risk and legal materials a council needs to weigh up a small pilot.',
+      heroTitle: 'A <span class="g">low-risk</span> pilot for borough land.',
+      heroLead: 'Test affordable community housing on car parks and greyfield plots that already exist — <b>without permanent land loss</b>. A small, reversible pilot with community benefit built in.',
+      heroCta: { text: 'Explore the council case →', href: 'https://homefolk.org.uk' },
+      problemTitle: 'Housing pressure on <span class="g">land you already hold</span>.',
+      problemBody: 'Boroughs face acute housing need alongside underused, paved sites doing very little. homefolk offers a way to test a response on that land — small, reversible and publicly accountable.',
+      pilotTitle: 'A small, <span class="g">reversible</span> borough pilot.',
+      pilotBody: 'Light-touch homes need no foundations, sit on existing hard surfaces, and can be fully removed later. Designed to real safety, accessibility and London Plan standards — low cost, low risk, high public benefit.',
+      involvedTitle: 'Discuss a <span class="c">borough pilot</span>.',
+      involvedBody: 'A small, reversible pilot on underused council land — community-owned, planning-aware and built to remove cleanly. If that’s worth exploring for your borough, let’s talk.',
+      involvedCta: { text: 'Explore a borough site conversation →', href: 'mailto:admin@homefolk.org.uk' },
+      prompts: [
+        'Would your council approve this site?',
+        'Would neighbours see this as a threat or a benefit?',
+        'What should be measured after six months?'
+      ],
+      cards: [
+        { ico:'♻️', title:'Low-risk & reversible', items:['No foundations, no permanent land loss','Sits on existing paved sites','Fully removable later'] },
+        { ico:'📐', title:'Planning-ready', items:['Tested against LSPBSL London Plan Guidance','Fire-safe, accessible, durable design','A clean, well-documented case study'] },
+        { ico:'🤝', title:'Public benefit', items:['Genuinely affordable, community-owned','Greened, safer underused sites','Grown from an existing neighbourhood'] }
+      ]
+    }
+  };
+
+  /* catalogue of doc tiles (demo only — nothing is wired to a real file) */
+  var DOCS = {
+    tinyhomeFaqs: { ico:'🏠', title:'Tiny-home FAQs',            desc:'Honest answers on cost, space, bills, safety and what living in a tiny-home is really like.' },
+    residents:    { ico:'🔑', title:'Residents: live here',       desc:'Who can live here, how you’d join, and what day-to-day life in the village looks like.' },
+    conceptDoc:   { ico:'📘', title:'Village concept document',   desc:'The full vision — what a homefolk village is, how it’s designed, and the thinking behind it.' },
+    pilot:        { ico:'📍', title:'Pilot — how, where & when',  desc:'The first pilot explained: how it’s built, where it could land, and the timeline to move-in.' },
+    workshops:    { ico:'🤝', title:'Community engagement workshops', desc:'Open sessions where neighbours and residents help shape the village together.' },
+    volunteering: { ico:'🌱', title:'Volunteering',               desc:'Ways to get hands-on — from greening sites to helping test and run the pilot.' },
+    repository:   { ico:'🗂️', title:'Document repository',         desc:'Every workstream and document in one navigable place — filter, search, dig in.' },
+    slideDeck:    { ico:'📊', title:'Social enterprise slide deck', desc:'The pitch deck: mission, model and the case for backing the pilot.' },
+    team:         { ico:'👥', title:'Team + partners',            desc:'The people behind homefolk and the universities, NGOs and partners already involved.' },
+    model:        { ico:'🧩', title:'Homefolk’s model',           desc:'How the whole model fits together — affordable, low-carbon, community-owned, healthy.' },
+    legal:        { ico:'⚖️', title:'Legal ownership model',       desc:'The layered structure (the “homefolk sandwich”) that locks in affordability for good.' },
+    review:       { ico:'🔍', title:'Critical / community review', desc:'Critical and community feedback on the model — strengths, risks and open questions.' },
+    finance:      { ico:'💷', title:'Financial transparency',     desc:'Transparent costings: what the pilot costs, where money goes, and how it stacks up.' },
+    timeline:     { ico:'🗓️', title:'Graphic timeline',           desc:'The project journey at a glance — from concept to homes, year by year.' },
+    siteStrategy: { ico:'🗺️', title:'Site strategy',              desc:'How sites are chosen: underused, paved, reversible land mapped across the borough.' }
+  };
+
+  /* which tiles each audience sees, and in what order (curated, not equal) */
+  var RECO = {
+    student: ['tinyhomeFaqs','residents','conceptDoc','pilot','workshops','volunteering'],
+    partner: ['repository','conceptDoc','slideDeck','team','model','legal','review','workshops','finance','timeline'],
+    council: ['pilot','model','siteStrategy','review','workshops','legal','conceptDoc','finance','slideDeck','team']
+  };
+
+  var reduceMotion = matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var q = function(s){ return document.querySelector(s); };
+  var gateway = q('#gateway');
+  var switchLabel = q('#aud-switch-label');
+
+  function setText(key, html){
+    var el = document.querySelector('[data-aud="'+key+'"]');
+    if(el) el.innerHTML = html;
+  }
+  function setCta(key, cta){
+    var el = document.querySelector('[data-aud="'+key+'"]');
+    if(el && cta){ el.textContent = cta.text; if(cta.href) el.setAttribute('href', cta.href); }
+  }
+  function renderCards(cards){
+    var host = document.querySelector('[data-aud="cards"]');
+    if(!host || !cards) return;
+    host.innerHTML = cards.map(function(c){
+      var lis = c.items.map(function(i){ return '<li>'+i+'</li>'; }).join('');
+      return '<div class="card reveal in"><h4><span class="ic">'+c.ico+'</span>'+c.title+'</h4><ul>'+lis+'</ul></div>';
+    }).join('');
+  }
+
+  function renderPrompts(mode){
+    var grid = document.querySelector('[data-aud="prompts"]');
+    if(!grid) return;
+    var list = (AUDIENCE[mode] && AUDIENCE[mode].prompts) || DEFAULT_PROMPTS;
+    grid.innerHTML = list.map(function(p){
+      return '<div class="prompt reveal in"><span class="pr-mark">?</span><span class="pr-q">'+p+'</span></div>';
+    }).join('');
+  }
+
+  function renderReco(mode){
+    var sec = q('#reco');
+    var grid = document.querySelector('[data-aud="reco"]');
+    var list = RECO[mode];
+    if(!sec || !grid) return;
+    if(!list){ sec.classList.add('hidden'); return; }
+    grid.innerHTML = list.map(function(k){
+      var d = DOCS[k]; if(!d) return '';
+      return '<button class="reco-card" type="button" data-doc="'+k+'">'
+        + '<span class="rc-ico">'+d.ico+'</span>'
+        + '<span class="rc-t">'+d.title+'</span>'
+        + '<span class="rc-d">'+d.desc+'</span>'
+        + '<span class="rc-go">Open →</span>'
+        + '</button>';
+    }).join('');
+    sec.classList.remove('hidden');
+  }
+
+  // lightweight toast (the module's toast() lives in another scope)
+  function miniToast(msg){
+    var t = q('#toast'); if(!t) return;
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(miniToast._t);
+    miniToast._t = setTimeout(function(){ t.classList.remove('show'); }, 2400);
+  }
+
+  function applyAudience(mode){
+    renderPrompts(mode);   // audience-aware reflective prompts (covers default too)
+    if(mode==='default' || !AUDIENCE[mode]){
+      // leave today's shared copy as-is; hide the tailored shortlist
+      var sec = q('#reco'); if(sec) sec.classList.add('hidden');
+      if(switchLabel) switchLabel.textContent = 'Switch view';
+      return;
+    }
+    var a = AUDIENCE[mode];
+    setText('recoTitle', a.recoTitle);
+    setText('recoLead', a.recoLead);
+    renderReco(mode);
+    setText('heroTitle', a.heroTitle);
+    setText('heroLead', a.heroLead);
+    setCta('heroCta', a.heroCta);
+    setText('problemTitle', a.problemTitle);
+    setText('problemBody', a.problemBody);
+    setText('pilotTitle', a.pilotTitle);
+    setText('pilotBody', a.pilotBody);
+    renderCards(a.cards);
+    setText('involvedTitle', a.involvedTitle);
+    setText('involvedBody', a.involvedBody);
+    setCta('involvedCta', a.involvedCta);
+    if(switchLabel) switchLabel.textContent = a.label;
+  }
+
+  function openGateway(){ if(gateway) gateway.classList.remove('is-hidden'); }
+  function closeGateway(){
+    if(gateway) gateway.classList.add('is-hidden');
+    var landing = q('#landing');
+    if(landing) landing.scrollTo ? landing.scrollTo({top:0,behavior:reduceMotion?'auto':'smooth'}) : (landing.scrollTop=0);
+  }
+
+  function choose(mode){
+    if(mode==='default'){ try{ localStorage.removeItem(KEY); }catch(e){} }
+    else { try{ localStorage.setItem(KEY, mode); }catch(e){} }
+    applyAudience(mode);
+    closeGateway();
+  }
+
+  // wire the gateway cards + skip
+  Array.prototype.forEach.call(document.querySelectorAll('#gateway [data-mode]'), function(btn){
+    btn.addEventListener('click', function(){ choose(btn.getAttribute('data-mode')); });
+  });
+  // wire the nav switch
+  var sw = q('#aud-switch');
+  if(sw) sw.addEventListener('click', openGateway);
+
+  // "Share the project" — native share where available, copy-link fallback
+  var shareBtn = q('#share-btn');
+  if(shareBtn) shareBtn.addEventListener('click', function(){
+    var url = 'https://homefolk.org.uk';
+    var data = { title:'homefolk', text:'homefolk — small, community-owned tiny-home villages for London.', url:url };
+    if(navigator.share){
+      navigator.share(data).catch(function(){});
+    } else if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(url).then(function(){ miniToast('Link copied ✓'); },
+                                            function(){ window.open(url,'_blank','noopener'); });
+    } else {
+      window.open(url,'_blank','noopener');
+    }
+  });
+
+  // reco tiles are demo-only — acknowledge the click instead of dead-linking
+  var recoGrid = document.querySelector('[data-aud="reco"]');
+  if(recoGrid) recoGrid.addEventListener('click', function(e){
+    var card = e.target.closest('.reco-card'); if(!card) return;
+    var d = DOCS[card.getAttribute('data-doc')];
+    miniToast((d ? d.title : 'This document') + ' — coming soon in the full site');
+  });
+
+  // init: restore a saved lens, else leave default copy and show the doorway
+  var saved = null;
+  try{ saved = localStorage.getItem(KEY); }catch(e){}
+  if(saved && MODES.indexOf(saved)>=0){
+    applyAudience(saved);
+    gateway.classList.add('is-hidden');
+  } else {
+    renderPrompts('default');   // populate the band under the still-default landing
+    openGateway();
+  }
+})();
+</script>
+</body>
+</html>

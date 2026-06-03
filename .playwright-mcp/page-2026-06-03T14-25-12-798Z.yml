@@ -1,0 +1,21 @@
+- generic [active] [ref=e1]:
+  - img
+  - generic [ref=e34]:
+    - generic [ref=e35]:
+      - img [ref=e37]
+      - generic [ref=e39]: i might live in it
+    - generic [ref=e40]:
+      - generic [ref=e42]:
+        - generic [ref=e43]: Design · 2 of 6
+        - heading "What kind of home would you test?" [level=2] [ref=e56]
+        - generic [ref=e45]:
+          - button "Compact private pods Independence, minimal shared space" [ref=e57] [cursor=pointer]:
+            - generic [ref=e58]: Compact private pods
+            - generic [ref=e59]: Independence, minimal shared space
+          - button "Pods + a shared kitchen & social space Balance of privacy and community" [ref=e60] [cursor=pointer]:
+            - generic [ref=e61]: Pods + a shared kitchen & social space
+            - generic [ref=e62]: Balance of privacy and community
+          - button "Mostly communal living Cheapest and greenest, less privacy" [ref=e63] [cursor=pointer]:
+            - generic [ref=e64]: Mostly communal living
+            - generic [ref=e65]: Cheapest and greenest, less privacy
+      - button "← back" [ref=e66] [cursor=pointer]

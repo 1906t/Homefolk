@@ -1,0 +1,2 @@
+[     383ms] [WARNING] WARNING: Multiple instances of Three.js being imported. @ https://unpkg.com/three@0.160.0/build/three.module.js:53033
+[     396ms] [ERROR] Failed to load resource: the server responded with a status of 404 (File not found) @ http://localhost:8137/favicon.ico:0

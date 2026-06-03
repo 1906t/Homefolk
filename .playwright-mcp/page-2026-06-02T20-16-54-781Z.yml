@@ -1,0 +1,16 @@
+- generic [active] [ref=e1]:
+  - img
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - img [ref=e6]
+        - generic [ref=e8]: homefolk
+      - generic [ref=e9]:
+        - text: community-owned tinyhouse villages
+        - text: for ecohealth
+      - paragraph [ref=e10]: homefolk activates underused, light-touch sites — disused car parks, garage courts, brownfield & vacant plots — turning them into close-knit tiny-home villages. Build one in Hackney.
+      - generic [ref=e11]:
+        - generic [ref=e12]: 24%
+        - generic [ref=e13]: of people in London experience poverty after they've paid for housing.
+      - button "Start building in Hackney →" [ref=e15] [cursor=pointer]
+    - generic [ref=e16]: "A concept demo for community testers · data: OpenStreetMap, Mapillary, Quaternius (CC0), Art Institute of Chicago"

@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e ' *)",
+      "Bash(node -e 'const fs=require\\(\"fs\"\\);const h=fs.readFileSync\\(\"homefolk-builder.html\",\"utf8\"\\);const m=[...h.matchAll\\(/<script type=\"module\">\\([\\\\s\\\\S]*?\\)<\\\\/script>/g\\)];fs.writeFileSync\\(\"/tmp/app.mjs\",m[m.length-1][1]\\);')",
+      "Bash(node --check --input-type=module)",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_console_messages",
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__playwright__browser_click",
+      "mcp__playwright__browser_evaluate",
+      "mcp__playwright__browser_wait_for",
+      "Bash(node -e 'const s=require\\(\"fs\"\\).readFileSync\\(\"homefolk-builder.html\",\"utf8\"\\);const re=/[\\\\u{1F000}-\\\\u{1FAFF}\\\\u{2600}-\\\\u{27BF}\\\\u{2B00}-\\\\u{2BFF}\\\\u{FE0F}]/gu;console.log\\(\"emoji:\",[...s.matchAll\\(re\\)].length\\)')",
+      "Bash(pkill -f \"http.server 8765\")",
+      "Bash(open \"/Users/leyichang/Desktop/freshy/homefolk-builder.html\")",
+      "Bash(git remote *)",
+      "Bash(gh auth *)",
+      "Bash(vercel whoami *)",
+      "Bash(vercel ls *)",
+      "Bash(brew install *)",
+      "Bash(gh --version)",
+      "Bash(kill 79963)",
+      "Bash(python3 -m http.server 8137)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8137/index.html)",
+      "Bash(kill %1)",
+      "Bash(pkill -f \"http.server 8137\")",
+      "Bash(vercel --prod --yes)",
+      "Bash(curl -s https://project-i7ek8.vercel.app/)"
+    ]
+  }
+}

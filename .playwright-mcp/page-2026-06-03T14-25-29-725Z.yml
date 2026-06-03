@@ -1,0 +1,18 @@
+- generic [active] [ref=e1]:
+  - img
+  - generic [ref=e34]:
+    - generic [ref=e35]:
+      - img [ref=e37]
+      - generic [ref=e39]: i might live in it
+    - generic [ref=e40]:
+      - generic [ref=e42]:
+        - generic [ref=e43]: Helping test · 6 of 6
+        - heading "What would you most want to help test or feed back on?" [level=2] [ref=e97]
+        - generic [ref=e45]:
+          - button "Living day-to-day in a tiny home" [ref=e98] [cursor=pointer]:
+            - generic [ref=e99]: Living day-to-day in a tiny home
+          - button "Sharing space & community life" [ref=e100] [cursor=pointer]:
+            - generic [ref=e101]: Sharing space & community life
+          - button "Cost & affordability in practice" [ref=e102] [cursor=pointer]:
+            - generic [ref=e103]: Cost & affordability in practice
+      - button "← back" [ref=e66] [cursor=pointer]

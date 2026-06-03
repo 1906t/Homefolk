@@ -1,0 +1,91 @@
+- generic [active] [ref=e1]:
+  - img
+  - generic [ref=e2]:
+    - text: “”
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - img [ref=e6]
+        - button "← back to map" [ref=e8] [cursor=pointer]
+        - generic [ref=e9]: the studio
+      - generic [ref=e10]:
+        - generic [ref=e11]:
+          - generic [ref=e12]:
+            - generic:
+              - generic [ref=e13]:
+                - heading "Surfaces" [level=4] [ref=e14]
+                - generic [ref=e15]:
+                  - button "Walls" [ref=e16] [cursor=pointer]
+                  - button "Floor" [ref=e17] [cursor=pointer]
+                  - button "Roof" [ref=e18] [cursor=pointer]
+                - generic [ref=e19]:
+                  - generic "#E4EFD8" [ref=e20] [cursor=pointer]
+                  - generic "#CFE0BD" [ref=e21] [cursor=pointer]
+                  - generic "#FFFFFF" [ref=e22] [cursor=pointer]
+                  - generic "#7FB6D8" [ref=e23] [cursor=pointer]
+                  - generic "#EAD9C8" [ref=e24] [cursor=pointer]
+                  - generic "#1F1F1F" [ref=e25] [cursor=pointer]
+              - generic [ref=e26]:
+                - heading "Furniture · Quaternius (CC0)" [level=4] [ref=e27]
+                - generic [ref=e28]:
+                  - button "Bed" [ref=e29] [cursor=pointer]:
+                    - generic [ref=e30]: Bed
+                  - button "Couch" [ref=e31] [cursor=pointer]:
+                    - generic [ref=e32]: Couch
+                  - button "Chair" [ref=e33] [cursor=pointer]:
+                    - generic [ref=e34]: Chair
+                  - button "Table" [ref=e35] [cursor=pointer]:
+                    - generic [ref=e36]: Table
+                  - button "Stool" [ref=e37] [cursor=pointer]:
+                    - generic [ref=e38]: Stool
+                  - button "Shelf" [ref=e39] [cursor=pointer]:
+                    - generic [ref=e40]: Shelf
+                  - button "Nightstand" [ref=e41] [cursor=pointer]:
+                    - generic [ref=e42]: Nightstand
+                  - button "Sink" [ref=e43] [cursor=pointer]:
+                    - generic [ref=e44]: Sink
+                  - button "Fridge" [ref=e45] [cursor=pointer]:
+                    - generic [ref=e46]: Fridge
+                  - button "Oven" [ref=e47] [cursor=pointer]:
+                    - generic [ref=e48]: Oven
+                  - button "Plant" [ref=e49] [cursor=pointer]:
+                    - generic [ref=e50]: Plant
+                  - button "Cactus" [ref=e51] [cursor=pointer]:
+                    - generic [ref=e52]: Cactus
+                  - button "Rug" [ref=e53] [cursor=pointer]:
+                    - generic [ref=e54]: Rug
+                  - button "Lamp" [ref=e55] [cursor=pointer]:
+                    - generic [ref=e56]: Lamp
+                  - button "Fireplace" [ref=e57] [cursor=pointer]:
+                    - generic [ref=e58]: Fireplace
+              - generic [ref=e59]:
+                - heading "Wall art · public domain" [level=4] [ref=e60]
+                - button "Hang a painting" [ref=e61] [cursor=pointer]
+                - button "Shuffle" [ref=e62] [cursor=pointer]
+            - generic: drag furniture to move · click empty space to deselect · drag background to orbit
+          - generic [ref=e64]:
+            - generic [ref=e65]:
+              - text: "Furniture:"
+              - link "Quaternius" [ref=e66] [cursor=pointer]:
+                - /url: https://quaternius.com
+              - text: CC0 via
+              - link "Poly Pizza" [ref=e67] [cursor=pointer]:
+                - /url: https://poly.pizza
+            - generic [ref=e68]:
+              - text: "Art:"
+              - link "Art Institute of Chicago" [ref=e69] [cursor=pointer]:
+                - /url: https://www.artic.edu/open-access
+              - text: · Met (public domain)
+            - generic [ref=e70]:
+              - text: "Street:"
+              - link "Mapillary" [ref=e71] [cursor=pointer]:
+                - /url: https://www.mapillary.com
+        - generic [ref=e72]:
+          - generic [ref=e73]:
+            - button "Toggle street view" [expanded] [ref=e74] [cursor=pointer]: ›
+            - generic [ref=e76]: Street view — Car park / greyfield
+            - generic [ref=e77]:
+              - textbox "Mapillary access token (free)" [ref=e78]: MLY|26275324248758064|7819d63bee8179a083cdd76e20557967
+              - button "set" [ref=e79] [cursor=pointer]
+          - generic [ref=e81]:
+            - img [ref=e82]
+            - paragraph [ref=e84]: Looking around this spot…
