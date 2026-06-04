@@ -1691,16 +1691,16 @@ if(location.hash==='#studio'){
     miniToast((d ? d.title : 'This document') + ' — coming soon in the full site');
   });
 
-  // init: restore a saved lens, else leave default copy and show the doorway
+  // init: always open the doorway first on every load; pre-theme the page
+  // underneath from a saved lens (if any) so it's ready once the doorway closes
   var saved = null;
   try{ saved = localStorage.getItem(KEY); }catch(e){}
   if(saved && MODES.indexOf(saved)>=0){
     applyAudience(saved);
-    gateway.classList.add('is-hidden');
   } else {
     renderPrompts('default');   // populate the band under the still-default landing
-    openGateway();
   }
+  openGateway();
 })();
 </script>
 </body>
