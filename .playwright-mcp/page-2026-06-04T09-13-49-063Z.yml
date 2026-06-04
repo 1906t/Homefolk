@@ -1,0 +1,134 @@
+- generic [active] [ref=e1]:
+  - img
+  - generic [ref=e2]:
+    - text: “”
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - img [ref=e6]
+        - button "← Back to homefolk" [ref=e8] [cursor=pointer]
+        - generic [ref=e9]: build a village
+      - generic [ref=e10]:
+        - generic:
+          - generic:
+            - img
+          - generic:
+            - button [ref=e106] [cursor=pointer]:
+              - img [ref=e108]
+            - button [ref=e110] [cursor=pointer]:
+              - img [ref=e112]
+            - button [ref=e114] [cursor=pointer]:
+              - img [ref=e116]
+            - button [ref=e118] [cursor=pointer]:
+              - img [ref=e120]
+            - button [ref=e122] [cursor=pointer]:
+              - img [ref=e124]
+            - button [ref=e126] [cursor=pointer]:
+              - img [ref=e128]
+            - button [ref=e130] [cursor=pointer]:
+              - img [ref=e132]
+            - button [ref=e195] [cursor=pointer]:
+              - img [ref=e197]
+        - generic:
+          - generic [ref=e11]:
+            - button "Zoom in" [ref=e12] [cursor=pointer]: +
+            - button "Zoom out" [disabled] [ref=e13]: −
+          - generic [ref=e14]:
+            - link "Leaflet" [ref=e15] [cursor=pointer]:
+              - /url: https://leafletjs.com
+              - img [ref=e16]
+              - text: Leaflet
+            - text: "| © OpenStreetMap contributors © CARTO"
+      - generic [ref=e20]:
+        - heading "Drag a tiny-home onto a site" [level=3] [ref=e21]
+        - paragraph [ref=e22]: homefolk only builds on underused land. Drag the pod onto a highlighted plot.
+        - generic [ref=e23]:
+          - img [ref=e25]
+          - generic [ref=e27]:
+            - generic [ref=e28]: Tiny-home pod
+            - generic [ref=e29]: drag me to the map
+        - generic [ref=e30]: "Village: 8 pods placed"
+      - generic [ref=e31]:
+        - heading "Underused sites" [level=4] [ref=e32]
+        - generic [ref=e33]:
+          - text: Car park / greyfield
+          - generic [ref=e35]: "749"
+        - generic [ref=e36]:
+          - text: Brownfield
+          - generic [ref=e38]: "29"
+        - generic [ref=e39]:
+          - text: Garages
+          - generic [ref=e41]: "137"
+        - generic [ref=e42]:
+          - text: Unused construction
+          - generic [ref=e44]: "80"
+      - generic [ref=e45]: "Tip: drop several pods to grow a village, then click a pod to step inside & customise it."
+      - generic [ref=e46]:
+        - paragraph [ref=e47]: "Mission: build the most liveable student village."
+        - generic [ref=e48]:
+          - generic [ref=e49]: "72"
+          - generic [ref=e50]: / 100
+          - generic [ref=e51]: Solid start
+        - generic [ref=e52]:
+          - generic [ref=e53]: People housed
+          - generic [ref=e54]: "16"
+        - generic [ref=e55]:
+          - generic [ref=e56]: Homes placed
+          - generic [ref=e57]: "8"
+        - generic [ref=e134]:
+          - generic [ref=e200]:
+            - generic [ref=e201]: Avg liveability
+            - generic [ref=e202]: "80"
+          - generic [ref=e206]:
+            - generic [ref=e207]: Carbon benefit
+            - generic [ref=e208]: High
+          - generic [ref=e212]:
+            - generic [ref=e213]: Community score
+            - generic [ref=e214]: "55"
+          - generic [ref=e218]:
+            - generic [ref=e219]: Planning risk
+            - generic [ref=e220]: Low
+      - generic [ref=e61]:
+        - generic [ref=e62]:
+          - generic [ref=e64]: Car park / greyfield
+          - button "close" [ref=e65] [cursor=pointer]: ×
+        - paragraph [ref=e66]: Easy starter site
+        - generic [ref=e67]:
+          - generic [ref=e224]:
+            - generic [ref=e225]: Homes possible
+            - generic [ref=e226]: 8 homes
+          - generic [ref=e230]:
+            - generic [ref=e231]: Resident convenience
+            - generic [ref=e232]: "80"
+          - generic [ref=e236]:
+            - generic [ref=e237]: Community benefit
+            - generic [ref=e238]: "55"
+          - generic [ref=e242]:
+            - generic [ref=e243]: Carbon impact
+            - generic [ref=e244]: High
+          - generic [ref=e248]:
+            - generic [ref=e249]: Planning difficulty
+            - generic [ref=e250]: Low
+          - generic [ref=e254]:
+            - generic [ref=e255]: Neighbour sensitivity
+            - generic [ref=e256]: Medium
+        - paragraph [ref=e104]: Flat, paved and already underused — the simplest place to begin. Low planning friction and quick to green.
+        - generic [ref=e105]:
+          - text: Pod placed on Car park / greyfield. +8 carbon points · +8 liveability · planning risk barely moved.
+          - text: Click the pod to step inside & customise it.
+      - generic [ref=e260]:
+        - generic [ref=e261]: Pilot complete
+        - generic [ref=e262]: 72/ 100
+        - generic [ref=e263]: A solid pilot with room to sharpen.
+        - generic [ref=e264]:
+          - generic [ref=e265]: Main strength
+          - text: Best on village scale (100/100).
+        - generic [ref=e266]:
+          - generic [ref=e267]: Main risk
+          - text: Weakest on community benefit (55/100).
+        - generic [ref=e268]:
+          - generic [ref=e269]: Recommendation
+          - text: Mix in a garage site or two for a stronger local community win.
+        - generic [ref=e270]:
+          - button "Keep building" [ref=e271] [cursor=pointer]
+          - button "Nice — done" [ref=e272] [cursor=pointer]
+  - generic: +8 carbon points · +8 liveability · planning risk barely moved.

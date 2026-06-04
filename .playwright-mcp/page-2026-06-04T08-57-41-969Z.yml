@@ -1,0 +1,77 @@
+- generic [active] [ref=e1]:
+  - img
+  - generic [ref=e2]:
+    - text: “”
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - img [ref=e6]
+        - button "← Back to homefolk" [ref=e8] [cursor=pointer]
+        - generic [ref=e9]: build a village
+      - generic [ref=e10]:
+        - generic:
+          - generic:
+            - img
+        - generic:
+          - generic [ref=e11]:
+            - button "Zoom in" [ref=e12] [cursor=pointer]: +
+            - button "Zoom out" [disabled] [ref=e13]: −
+          - generic [ref=e14]:
+            - link "Leaflet" [ref=e15] [cursor=pointer]:
+              - /url: https://leafletjs.com
+              - img [ref=e16]
+              - text: Leaflet
+            - text: "| © OpenStreetMap contributors © CARTO"
+      - generic [ref=e20]:
+        - heading "Drag a tiny-home onto a site" [level=3] [ref=e21]
+        - paragraph [ref=e22]: homefolk only builds on underused land. Drag the pod onto a highlighted plot.
+        - generic [ref=e23]:
+          - img [ref=e25]
+          - generic [ref=e27]:
+            - generic [ref=e28]: Tiny-home pod
+            - generic [ref=e29]: drag me to the map
+        - generic [ref=e30]: "Village: 0 pods placed"
+      - generic [ref=e31]:
+        - heading "Underused sites" [level=4] [ref=e32]
+        - generic [ref=e33]:
+          - text: Car park / greyfield
+          - generic [ref=e35]: "749"
+        - generic [ref=e36]:
+          - text: Brownfield
+          - generic [ref=e38]: "29"
+        - generic [ref=e39]:
+          - text: Garages
+          - generic [ref=e41]: "137"
+        - generic [ref=e42]:
+          - text: Unused construction
+          - generic [ref=e44]: "80"
+      - generic [ref=e45]: "Tip: drop several pods to grow a village, then click a pod to step inside & customise it."
+  - dialog "Housing, rebuilt one block at a time." [ref=e49]:
+    - generic [ref=e50]:
+      - img "homefolk" [ref=e52]
+      - generic [ref=e53]:
+        - text: Choose your route
+        - img [ref=e55]
+      - heading "Housing, rebuilt one block at a time." [level=2] [ref=e58]:
+        - text: Housing, rebuilt
+        - text: one block at a time.
+      - paragraph [ref=e59]: Same Homefolk story, three lenses. Pick the one that fits — the page reframes around you, and you can switch anytime.
+      - generic [ref=e60]:
+        - button "I'm a student New resident path Could you live here?" [ref=e61] [cursor=pointer]:
+          - img [ref=e63]
+          - generic [ref=e67]: I'm a student
+          - generic [ref=e68]: New resident path
+          - generic [ref=e69]: Could you live here?
+          - generic [ref=e70]: →
+        - button "I'm an academic / partner Researcher path A researched, measurable pilot." [ref=e71] [cursor=pointer]:
+          - img [ref=e73]
+          - generic [ref=e76]: I'm an academic / partner
+          - generic [ref=e77]: Researcher path
+          - generic [ref=e78]: A researched, measurable pilot.
+          - generic [ref=e79]: →
+        - button "I'm from a council Planning team path Low-risk, reversible borough pilot." [ref=e80] [cursor=pointer]:
+          - img [ref=e82]
+          - generic [ref=e85]: I'm from a council
+          - generic [ref=e86]: Planning team path
+          - generic [ref=e87]: Low-risk, reversible borough pilot.
+          - generic [ref=e88]: →
+      - button "I'm just curious — show me around →" [ref=e89] [cursor=pointer]

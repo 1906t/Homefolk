@@ -329,6 +329,65 @@ button{font-family:inherit}
   box-shadow:var(--shadow);padding:10px 14px;font-size:12px;color:var(--ink-soft);max-width:240px}
 .map-hint b{color:var(--ink)}
 
+/* ---- gamified layer: village score, site card, pilot result ---- */
+/* running village-score panel, top-right of the map */
+.vscore{position:absolute;top:92px;right:16px;z-index:611;width:248px;background:#fff;
+  border-radius:16px;box-shadow:var(--shadow);padding:14px 16px 16px;font-size:12px}
+.vscore .mission{font-size:10.5px;font-weight:700;letter-spacing:.04em;color:var(--green-d);
+  text-transform:uppercase;margin:0 0 10px;line-height:1.4}
+.vscore .total{display:flex;align-items:baseline;gap:7px;margin-bottom:11px}
+.vscore .total .num{font-size:38px;font-weight:800;color:var(--coral-d);line-height:1;letter-spacing:-1.5px}
+.vscore .total .den{font-size:13px;color:var(--ink-soft);font-weight:600}
+.vscore .total .verb{margin-left:auto;font-size:11px;color:var(--ink-soft);text-align:right;max-width:92px;line-height:1.3}
+.vscore .pair{display:flex;justify-content:space-between;gap:8px;margin:6px 0}
+.vscore .pair .k{color:var(--ink-soft)}
+.vscore .pair .v{font-weight:700;font-variant-numeric:tabular-nums}
+.vscore #v-bars{margin-top:10px}
+
+/* metric bar — shared by site card + village panel */
+.mbar{font-size:11px}
+.mbar+.mbar{margin-top:7px}
+.mbar .top{display:flex;justify-content:space-between;gap:8px;margin-bottom:3px}
+.mbar .top .lab{color:var(--ink-soft)}
+.mbar .top .val{font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.mbar .trk{height:7px;border-radius:99px;background:var(--line);overflow:hidden}
+.mbar .fill{height:100%;border-radius:99px;background:var(--green);transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.mbar.risk .fill{background:var(--coral)}
+.mbar.warn .fill{background:#E0A92E}
+
+/* soft site card, floats bottom-centre */
+.sitecard{position:absolute;left:50%;bottom:18px;transform:translateX(-50%) translateY(8px);
+  z-index:612;width:330px;max-width:calc(100vw - 32px);background:#fff;border-radius:18px;
+  box-shadow:var(--shadow);padding:15px 17px 16px;opacity:0;pointer-events:none;
+  transition:opacity .22s,transform .22s}
+.sitecard.show{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.sitecard .sc-head{display:flex;align-items:center;gap:9px;margin-bottom:2px}
+.sitecard .sc-sw{width:14px;height:14px;border-radius:5px;flex:0 0 auto;opacity:.9}
+.sitecard .sc-type{font-weight:800;font-size:15px}
+.sitecard .sc-x{margin-left:auto;border:none;background:var(--line);color:var(--ink-soft);
+  width:24px;height:24px;border-radius:50%;cursor:pointer;font-size:15px;line-height:1}
+.sitecard .sc-x:hover{background:#ddddd6}
+.sitecard .sc-pers{font-size:12px;font-weight:700;color:var(--green-d);margin:0 0 11px}
+.sitecard .sc-blurb{font-size:12px;color:var(--ink-soft);line-height:1.5;margin:11px 0 0}
+.sitecard .sc-act{margin-top:12px;background:#f4f7f0;border:1px solid var(--line);
+  border-radius:11px;padding:9px 11px;font-size:12px;color:var(--ink);line-height:1.5}
+.sitecard .sc-act b{color:var(--green-d)}
+
+/* pilot-complete result card */
+.pilot-modal{position:absolute;inset:74px 0 0 0;z-index:640;display:none;align-items:center;
+  justify-content:center;background:rgba(31,31,31,.34);padding:20px}
+.pilot-modal.show{display:flex}
+.pilot-card{background:#fff;border-radius:22px;box-shadow:var(--shadow);max-width:380px;width:100%;
+  padding:26px 26px 22px;text-align:center}
+.pilot-card .pc-kicker{font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--green-d)}
+.pilot-card .pc-score{font-size:60px;font-weight:800;color:var(--coral-d);line-height:1;letter-spacing:-2px;margin:8px 0 2px}
+.pilot-card .pc-score span{font-size:18px;color:var(--ink-soft);font-weight:600;letter-spacing:0}
+.pilot-card .pc-verdict{font-size:14px;color:var(--ink);font-weight:700;margin:4px 0 16px}
+.pilot-card .pc-row{text-align:left;background:#f7f8f4;border-radius:12px;padding:10px 13px;margin:8px 0;font-size:13px;line-height:1.5}
+.pilot-card .pc-row .pc-l{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft);display:block;margin-bottom:2px}
+.pilot-card .pc-btns{display:flex;gap:9px;margin-top:16px}
+.pilot-card .pc-btns .btn{flex:1;justify-content:center}
+
 /* ============================================================== *
  *  4. STUDIO                                                     *
  * ============================================================== */
@@ -697,6 +756,47 @@ button{font-family:inherit}
 
     <div class="map-hint"><b>Tip:</b> drop several pods to grow a village, then click a pod to step inside &amp; customise it.</div>
 
+    <!-- running village score (gamified metrics) -->
+    <div class="vscore" id="vscore">
+      <p class="mission" id="v-mission">Mission: grow your village.</p>
+      <div class="total">
+        <span class="num" id="v-score">0</span><span class="den">/ 100</span>
+        <span class="verb" id="v-verb">Drop a pod to begin</span>
+      </div>
+      <div class="pair"><span class="k">People housed</span><span class="v" id="v-people">0</span></div>
+      <div class="pair"><span class="k">Homes placed</span><span class="v" id="v-homes">0</span></div>
+      <div id="v-bars"></div>
+    </div>
+
+    <!-- soft site card shown on click / drop -->
+    <div class="sitecard" id="sitecard">
+      <div class="sc-head">
+        <span class="sc-sw" id="sc-sw"></span>
+        <span class="sc-type" id="sc-type">Site</span>
+        <button class="sc-x" id="sc-x" title="close" aria-label="close">×</button>
+      </div>
+      <p class="sc-pers" id="sc-pers"></p>
+      <div id="sc-bars"></div>
+      <p class="sc-blurb" id="sc-blurb"></p>
+      <div class="sc-act" id="sc-act"></div>
+    </div>
+
+    <!-- pilot complete result -->
+    <div class="pilot-modal" id="pilot-modal">
+      <div class="pilot-card">
+        <div class="pc-kicker">Pilot complete</div>
+        <div class="pc-score" id="pc-score">0<span>/ 100</span></div>
+        <div class="pc-verdict" id="pc-verdict"></div>
+        <div class="pc-row"><span class="pc-l">Main strength</span><span id="pc-strength"></span></div>
+        <div class="pc-row"><span class="pc-l">Main risk</span><span id="pc-risk"></span></div>
+        <div class="pc-row"><span class="pc-l">Recommendation</span><span id="pc-reco"></span></div>
+        <div class="pc-btns">
+          <button class="btn btn-ghost" id="pc-keep">Keep building</button>
+          <button class="btn btn-primary" id="pc-done">Nice — done</button>
+        </div>
+      </div>
+    </div>
+
     <div class="map-overlay" id="map-overlay">
       <div class="spinner"></div>
       <div id="map-overlay-text"><b>Finding underused sites in Hackney…</b><br/><span style="color:var(--ink-soft);font-size:13px">querying OpenStreetMap</span></div>
@@ -896,7 +996,7 @@ function siteAt(latlng){
 /* ============================================================== *
  *  LANDING — pod-builder link + scroll motion                    *
  * ============================================================== */
-function openBuilder(){ showScreen('map'); initMap(); }
+function openBuilder(){ showScreen('map'); initMap(); updateVillageScore(); }
 ['#nav-builder','#hero-builder','#cta-builder'].forEach(sel=>{
   const el = $(sel); if(el) el.onclick = openBuilder;
 });
@@ -985,6 +1085,13 @@ function wireDrop(map){
     if(!site){ toast('homefolk builds on underused sites — drop onto a highlighted plot'); return; }
     placePod(latlng, site.type);
   });
+  // click a highlighted plot to preview its metrics (polygons are non-interactive,
+  // so clicks fall through to the map and siteAt() resolves them)
+  map.on('click', e=>{
+    const site = siteAt(e.latlng);
+    if(site) showSiteCard(site.type);
+    else hideSiteCard();
+  });
 }
 
 function placePod(latlng, type){
@@ -998,8 +1105,198 @@ function placePod(latlng, type){
   m.on('click',()=>openStudio(pod));
   pod._marker=m;
   $('#pod-count').textContent = App.pods.length;
-  toast('Pod placed on '+ (SITE_STYLE[type]?.label||type) +' — click it to step inside');
+  onPodPlaced(pod);
 }
+
+/* ============================================================== *
+ *  GAMIFIED SCORING — local only, no APIs, no map rebuild        *
+ *  Each site type carries simple 0–100 metrics; placed pods       *
+ *  aggregate into a branch-weighted Village Score.                *
+ * ============================================================== */
+const SITE_METRICS = {
+  parking:      { homes:8,  convenience:80, community:55, carbon:78, planning:25, neighbour:35,
+    personality:'Easy starter site',
+    blurb:'Flat, paved and already underused — the simplest place to begin. Low planning friction and quick to green.' },
+  brownfield:   { homes:12, convenience:55, community:70, carbon:90, planning:72, neighbour:50,
+    personality:'Big impact, bigger risk',
+    blurb:'Former industrial land. Houses the most people and locks away the most carbon — but remediation pushes planning risk up.' },
+  garages:      { homes:5,  convenience:65, community:82, carbon:60, planning:20, neighbour:58,
+    personality:'Quiet community win',
+    blurb:'Disused council lock-ups. Small and easy to unlock — a visible local win, though it sits close to neighbours.' },
+  construction: { homes:9,  convenience:60, community:60, carbon:70, planning:52, neighbour:45,
+    personality:'Ready-to-go ground',
+    blurb:'Stalled, already-cleared construction land. Steady on every measure — a dependable middle-of-the-road choice.' },
+};
+
+// Per-audience mission + weights over six village dimensions (each set sums to 1):
+//   live=liveability  comm=community  carb=carbon  scale=village size
+//   planFeas=planning feasibility (100−risk)  neighAcc=neighbour acceptance (100−sensitivity)
+const AUDIENCE_SCORING = {
+  student: { mission:'Mission: build the most liveable student village.',
+    w:{ live:.30, comm:.30, carb:.10, scale:.10, planFeas:.10, neighAcc:.10 } },
+  partner: { mission:'Mission: build the strongest research pilot.',
+    w:{ carb:.30, scale:.25, comm:.15, live:.10, planFeas:.10, neighAcc:.10 } },
+  council: { mission:'Mission: build the lowest-risk borough pilot.',
+    w:{ planFeas:.30, neighAcc:.20, comm:.20, scale:.15, carb:.05, live:.10 } },
+  default: { mission:'Mission: grow a balanced village.',
+    w:{ live:.20, comm:.20, carb:.20, scale:.15, planFeas:.15, neighAcc:.10 } },
+};
+const PEOPLE_PER_POD = 2;
+const PILOT_TARGET = 8;
+
+function currentAudience(){
+  let m=null; try{ m=localStorage.getItem('hf-audience'); }catch(e){}
+  return AUDIENCE_SCORING[m] ? m : 'default';
+}
+const qual = v => v<30?'Low' : v<55?'Medium' : v<80?'High' : 'Very high';
+const clamp100 = v => Math.max(0, Math.min(100, Math.round(v)));
+
+/* six 0–100 village dimensions from the placed pods (null if none yet) */
+function villageDims(){
+  const pods = App.pods;
+  if(!pods.length) return null;
+  const avg = k => pods.reduce((s,p)=>s+SITE_METRICS[p.type][k],0)/pods.length;
+  const planRisk = avg('planning'), neigh = avg('neighbour');
+  return {
+    live:  avg('convenience'),
+    comm:  avg('community'),
+    carb:  avg('carbon'),
+    scale: Math.min(100, pods.length*12.5),
+    planRisk, neigh,
+    planFeas: 100-planRisk,
+    neighAcc: 100-neigh,
+  };
+}
+function villageScore(dims){
+  if(!dims) return 0;
+  const w = AUDIENCE_SCORING[currentAudience()].w;
+  let s=0; for(const k in w) s += w[k]*dims[k];
+  return clamp100(s);
+}
+
+/* metric bar renderer — shared by the site card and the village panel.
+   opts: { pct, display, tone:'good'|'risk'|'warn' } */
+function metricBar(label, value, opts){
+  opts = opts||{};
+  const pct  = clamp100(opts.pct!=null ? opts.pct : value);
+  const disp = opts.display!=null ? opts.display : value;
+  const tone = opts.tone||'good';
+  return '<div class="mbar '+tone+'">'
+    +   '<div class="top"><span class="lab">'+label+'</span><span class="val">'+disp+'</span></div>'
+    +   '<div class="trk"><div class="fill" style="width:'+pct+'%"></div></div>'
+    + '</div>';
+}
+
+/* ---- site card ---- */
+function siteCardBars(type){
+  const m = SITE_METRICS[type];
+  return [
+    metricBar('Homes possible',        m.homes,       { pct:(m.homes/14)*100, display:m.homes+' homes' }),
+    metricBar('Resident convenience',  m.convenience, { display:m.convenience }),
+    metricBar('Community benefit',     m.community,   { display:m.community }),
+    metricBar('Carbon impact',         m.carbon,      { display:qual(m.carbon) }),
+    metricBar('Planning difficulty',   m.planning,    { tone:'risk', display:qual(m.planning) }),
+    metricBar('Neighbour sensitivity', m.neighbour,   { tone:'warn', display:qual(m.neighbour) }),
+  ].join('');
+}
+function showSiteCard(type, action){
+  const m = SITE_METRICS[type], st = SITE_STYLE[type];
+  if(!m) return;
+  $('#sc-sw').style.background = st.color;
+  $('#sc-type').textContent = st.label;
+  $('#sc-pers').textContent = m.personality;
+  $('#sc-bars').innerHTML = siteCardBars(type);
+  $('#sc-blurb').textContent = m.blurb;
+  $('#sc-act').innerHTML = action || 'Drag a pod onto this plot to build here.';
+  $('#sitecard').classList.add('show');
+}
+function hideSiteCard(){ $('#sitecard').classList.remove('show'); }
+
+/* ---- per-pod feedback line ---- */
+function podFeedback(type){
+  const m = SITE_METRICS[type];
+  const carbonPts = Math.round(m.carbon/10);
+  const livePts   = Math.round(m.convenience/10);
+  const risk = m.planning>=60 ? 'planning risk increased notably'
+             : m.planning>=40 ? 'planning risk increased slightly'
+             :                  'planning risk barely moved';
+  return '<b>+'+carbonPts+' carbon points</b> · <b>+'+livePts+' liveability</b> · '+risk+'.';
+}
+
+/* ---- running village-score panel ---- */
+function updateVillageScore(){
+  const aud = currentAudience();
+  $('#v-mission').textContent = AUDIENCE_SCORING[aud].mission;
+  const pods = App.pods.length;
+  $('#v-people').textContent = pods*PEOPLE_PER_POD;
+  $('#v-homes').textContent  = pods;
+  const dims = villageDims();
+  if(!dims){
+    $('#v-score').textContent = '0';
+    $('#v-verb').textContent  = 'Drop a pod to begin';
+    $('#v-bars').innerHTML    = '';
+    return;
+  }
+  const score = villageScore(dims);
+  $('#v-score').textContent = score;
+  $('#v-verb').textContent  = score>=75?'Strong pilot' : score>=55?'Solid start' : score>=35?'Getting there' : 'Early days';
+  $('#v-bars').innerHTML = [
+    metricBar('Avg liveability', dims.live,     { display:Math.round(dims.live) }),
+    metricBar('Carbon benefit',  dims.carb,     { display:qual(dims.carb) }),
+    metricBar('Community score', dims.comm,     { display:Math.round(dims.comm) }),
+    metricBar('Planning risk',   dims.planRisk, { tone:'risk', display:qual(dims.planRisk) }),
+  ].join('');
+}
+
+/* ---- called after each pod lands ---- */
+function onPodPlaced(pod){
+  updateVillageScore();
+  const fb = podFeedback(pod.type);
+  showSiteCard(pod.type,
+    'Pod placed on '+(SITE_STYLE[pod.type]?.label||pod.type)+'. '+fb
+    +' <br><span style="color:var(--ink-soft)">Click the pod to step inside &amp; customise it.</span>');
+  toast(fb.replace(/<\/?b>/g,''));
+  if(App.pods.length===PILOT_TARGET) setTimeout(showPilotResult, 650);
+}
+
+/* ---- pilot-complete result ---- */
+const DIM_NAME = { live:'liveability', comm:'community benefit', carb:'carbon benefit',
+  scale:'village scale', planFeas:'planning feasibility', neighAcc:'neighbour acceptance' };
+const RECO_TIPS = {
+  live:    'Add pods on car-park / greyfield sites — they score highest for resident convenience.',
+  comm:    'Mix in a garage site or two for a stronger local community win.',
+  carb:    'Favour brownfield sites — they lock away the most carbon.',
+  scale:   'Place a few more pods to reach the full eight-home village.',
+  planFeas:'Lean on garages and car parks to keep planning risk low.',
+  neighAcc:'Spread the pods out and ease off garage sites near homes to calm neighbour concerns.',
+};
+function showPilotResult(){
+  const dims = villageDims(); if(!dims) return;
+  const score = villageScore(dims);
+  const vals = { live:dims.live, comm:dims.comm, carb:dims.carb, scale:dims.scale,
+                 planFeas:dims.planFeas, neighAcc:dims.neighAcc };
+  let best=null, worst=null;
+  for(const k in vals){
+    if(best===null  || vals[k]>vals[best])  best=k;
+    if(worst===null || vals[k]<vals[worst]) worst=k;
+  }
+  const verdict = score>=75?'A strong, credible pilot.'
+                : score>=55?'A solid pilot with room to sharpen.'
+                :           'A promising start — worth refining.';
+  $('#pc-score').innerHTML = score+'<span>/ 100</span>';
+  $('#pc-verdict').textContent  = verdict;
+  $('#pc-strength').textContent = 'Best on '+DIM_NAME[best]+' ('+Math.round(vals[best])+'/100).';
+  $('#pc-risk').textContent = dims.planRisk>=55
+    ? 'Planning risk is high ('+qual(dims.planRisk)+') — your weakest hand to play.'
+    : 'Weakest on '+DIM_NAME[worst]+' ('+Math.round(vals[worst])+'/100).';
+  $('#pc-reco').textContent = RECO_TIPS[worst] || RECO_TIPS.scale;
+  $('#pilot-modal').classList.add('show');
+}
+
+/* ---- gamified-layer wiring (static elements, safe at parse time) ---- */
+$('#sc-x').onclick   = hideSiteCard;
+$('#pc-keep').onclick = ()=>$('#pilot-modal').classList.remove('show');
+$('#pc-done').onclick = ()=>$('#pilot-modal').classList.remove('show');
 
 /* fetch underused candidate sites from Overpass — per-category, in parallel,
    with endpoint fallback + per-request timeout, rendered incrementally so one
@@ -1013,19 +1310,23 @@ const OVERPASS_EPS = [
   'https://overpass-api.de/api/interpreter',
   'https://overpass.kumi.systems/api/interpreter',
 ];
+// One mirror request: rejects on timeout, non-OK, or a body without elements,
+// so a broken/empty mirror can never "win" the race below.
+function fetchOverpassFrom(ep, query){
+  const ctrl=new AbortController();
+  const to=setTimeout(()=>ctrl.abort(),25000);
+  return fetch(ep,{ method:'POST', body:'data='+encodeURIComponent(query), signal:ctrl.signal })
+    .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+    .then(j=>{ if(j && j.elements) return j.elements; throw new Error('no elements'); })
+    .finally(()=>clearTimeout(to));
+}
+// Race every mirror at once and take the first healthy response. Trying them
+// sequentially meant a single slow mirror (private.coffee was ~65s) blocked the
+// fast ones (overpass-api.de ~1.3s) for 30s, so the plots appeared to never load.
 async function fetchOverpass(query){
-  for(const ep of OVERPASS_EPS){
-    try{
-      const ctrl=new AbortController();
-      const to=setTimeout(()=>ctrl.abort(),30000);
-      const r=await fetch(ep,{ method:'POST', body:'data='+encodeURIComponent(query), signal:ctrl.signal });
-      clearTimeout(to);
-      if(!r.ok) continue;
-      const j=await r.json();
-      if(j && j.elements) return j.elements;
-    }catch(e){ /* try next endpoint */ }
-  }
-  return null;
+  try{
+    return await Promise.any(OVERPASS_EPS.map(ep=>fetchOverpassFrom(ep,query)));
+  }catch(e){ /* every mirror failed */ return null; }
 }
 async function loadSites(){
   const bbox = `${HACKNEY.s},${HACKNEY.w},${HACKNEY.n},${HACKNEY.e}`;
