@@ -1,0 +1,340 @@
+- generic [active] [ref=e1]:
+  - img
+  - generic [ref=e3]:
+    - navigation [ref=e4]:
+      - img "homefolk" [ref=e5]
+      - generic [ref=e6]:
+        - link "The problem" [ref=e7] [cursor=pointer]:
+          - /url: "#problem"
+        - link "The home" [ref=e8] [cursor=pointer]:
+          - /url: "#concept"
+        - link "How it works" [ref=e9] [cursor=pointer]:
+          - /url: "#how"
+        - link "Standards" [ref=e10] [cursor=pointer]:
+          - /url: "#standards"
+        - link "Get involved" [ref=e11] [cursor=pointer]:
+          - /url: "#involved"
+        - button "↺ Council view" [ref=e12] [cursor=pointer]:
+          - text: ↺
+          - generic [ref=e13]: Council view
+        - button "Explore the builder" [ref=e14] [cursor=pointer]
+    - generic [ref=e15]:
+      - generic [ref=e16]:
+        - generic [ref=e17]: Tiny homes, owned together
+        - heading "A low-risk pilot for borough land." [level=1] [ref=e18]
+        - paragraph [ref=e19]: Test affordable community housing on car parks and greyfield plots that already exist — without permanent land loss. A small, reversible pilot with community benefit built in.
+        - generic [ref=e20]:
+          - link "Explore the council case →" [ref=e21] [cursor=pointer]:
+            - /url: https://homefolk.org.uk
+          - button "🏠 Build your own village" [ref=e22] [cursor=pointer]
+      - img
+    - generic [ref=e24]:
+      - generic [ref=e25]: Recommended for you
+      - heading "Picked for your borough team." [level=2] [ref=e26]
+      - paragraph [ref=e27]: The delivery, risk and legal materials a council needs to weigh up a small pilot.
+      - generic [ref=e28]:
+        - 'button "📍 Pilot — how, where & when The first pilot explained: how it’s built, where it could land, and the timeline to move-in. Open →" [ref=e29] [cursor=pointer]':
+          - generic [ref=e30]: 📍
+          - generic [ref=e31]: Pilot — how, where & when
+          - generic [ref=e32]: "The first pilot explained: how it’s built, where it could land, and the timeline to move-in."
+          - generic [ref=e33]: Open →
+        - button "🧩 Homefolk’s model How the whole model fits together — affordable, low-carbon, community-owned, healthy. Open →" [ref=e34] [cursor=pointer]:
+          - generic [ref=e35]: 🧩
+          - generic [ref=e36]: Homefolk’s model
+          - generic [ref=e37]: How the whole model fits together — affordable, low-carbon, community-owned, healthy.
+          - generic [ref=e38]: Open →
+        - 'button "🗺️ Site strategy How sites are chosen: underused, paved, reversible land mapped across the borough. Open →" [ref=e39] [cursor=pointer]':
+          - generic [ref=e40]: 🗺️
+          - generic [ref=e41]: Site strategy
+          - generic [ref=e42]: "How sites are chosen: underused, paved, reversible land mapped across the borough."
+          - generic [ref=e43]: Open →
+        - button "🔍 Critical / community review Critical and community feedback on the model — strengths, risks and open questions. Open →" [ref=e44] [cursor=pointer]:
+          - generic [ref=e45]: 🔍
+          - generic [ref=e46]: Critical / community review
+          - generic [ref=e47]: Critical and community feedback on the model — strengths, risks and open questions.
+          - generic [ref=e48]: Open →
+        - button "🤝 Community engagement workshops Open sessions where neighbours and residents help shape the village together. Open →" [ref=e49] [cursor=pointer]:
+          - generic [ref=e50]: 🤝
+          - generic [ref=e51]: Community engagement workshops
+          - generic [ref=e52]: Open sessions where neighbours and residents help shape the village together.
+          - generic [ref=e53]: Open →
+        - button "⚖️ Legal ownership model The layered structure (the “homefolk sandwich”) that locks in affordability for good. Open →" [ref=e54] [cursor=pointer]:
+          - generic [ref=e55]: ⚖️
+          - generic [ref=e56]: Legal ownership model
+          - generic [ref=e57]: The layered structure (the “homefolk sandwich”) that locks in affordability for good.
+          - generic [ref=e58]: Open →
+        - button "📘 Village concept document The full vision — what a homefolk village is, how it’s designed, and the thinking behind it. Open →" [ref=e59] [cursor=pointer]:
+          - generic [ref=e60]: 📘
+          - generic [ref=e61]: Village concept document
+          - generic [ref=e62]: The full vision — what a homefolk village is, how it’s designed, and the thinking behind it.
+          - generic [ref=e63]: Open →
+        - 'button "💷 Financial transparency Transparent costings: what the pilot costs, where money goes, and how it stacks up. Open →" [ref=e64] [cursor=pointer]':
+          - generic [ref=e65]: 💷
+          - generic [ref=e66]: Financial transparency
+          - generic [ref=e67]: "Transparent costings: what the pilot costs, where money goes, and how it stacks up."
+          - generic [ref=e68]: Open →
+        - 'button "📊 Social enterprise slide deck The pitch deck: mission, model and the case for backing the pilot. Open →" [ref=e69] [cursor=pointer]':
+          - generic [ref=e70]: 📊
+          - generic [ref=e71]: Social enterprise slide deck
+          - generic [ref=e72]: "The pitch deck: mission, model and the case for backing the pilot."
+          - generic [ref=e73]: Open →
+        - button "👥 Team + partners The people behind homefolk and the universities, NGOs and partners already involved. Open →" [ref=e74] [cursor=pointer]:
+          - generic [ref=e75]: 👥
+          - generic [ref=e76]: Team + partners
+          - generic [ref=e77]: The people behind homefolk and the universities, NGOs and partners already involved.
+          - generic [ref=e78]: Open →
+    - generic [ref=e80]:
+      - generic [ref=e81]: The problem
+      - heading "Housing pressure on land you already hold." [level=2] [ref=e82]
+      - paragraph [ref=e83]: Boroughs face acute housing need alongside underused, paved sites doing very little. homefolk offers a way to test a response on that land — small, reversible and publicly accountable.
+      - generic [ref=e84]:
+        - generic [ref=e85]:
+          - generic [ref=e86]: 0%
+          - generic [ref=e87]:
+            - text: of Londoners live in poverty
+            - emphasis [ref=e88]: after
+            - text: paying for housing
+          - generic [ref=e89]: Trust for London, 2024
+        - generic [ref=e90]:
+          - generic [ref=e91]: 0×
+          - generic [ref=e92]: England house prices vs. the median wage in 2022
+          - generic [ref=e93]: House of Commons Library, 2023
+        - generic [ref=e94]:
+          - generic [ref=e95]: 0%
+          - generic [ref=e96]: of the affordable homes we need are actually built each year
+          - generic [ref=e97]: RIBA, 2024
+        - generic [ref=e98]:
+          - generic [ref=e99]: 0%
+          - generic [ref=e100]: of surveyed London residents have lived with damp & mould
+          - generic [ref=e101]: Centre for London, 2023
+    - generic [ref=e103]:
+      - generic [ref=e104]:
+        - generic [ref=e105]: The concept
+        - heading "A small home. A real community." [level=2] [ref=e106]
+        - paragraph [ref=e107]: A tiny-home is a compact, low-carbon house. Cluster around eight of them with shared kitchen, laundry and garden, and you get a tiny village — close-knit, far lighter on the planet than a standard home.
+        - paragraph [ref=e108]: Because the pods are light-touch and need no foundations, they can sit on paved, underused land and be fully removed later. It's been done in towns before — never in a dense city like London.
+      - generic [ref=e109]:
+        - generic [ref=e110]: ~8 homes
+        - text: a pilot village of tiny-homes plus communal facilities, grown from an existing neighbourhood so residents have a support network from day one.
+    - generic [ref=e112]:
+      - generic [ref=e113]: A day in the life
+      - heading "Designed around your day." [level=2] [ref=e114]
+      - paragraph [ref=e115]: Proposed first residents are students and young professionals. One flexible space flows between work, rest and life — with covered outdoor areas that keep you connected to the green around you.
+      - generic [ref=e116]:
+        - generic [ref=e117]:
+          - generic [ref=e118]: 06:00
+          - generic [ref=e119]: 🌅
+          - generic [ref=e120]: Wake to morning light
+        - generic [ref=e121]:
+          - generic [ref=e122]: 10:00
+          - generic [ref=e123]: 🪴
+          - generic [ref=e124]: Tend the shared garden
+        - generic [ref=e125]:
+          - generic [ref=e126]: 12:00
+          - generic [ref=e127]: 📖
+          - generic [ref=e128]: Read & relax
+        - generic [ref=e129]:
+          - generic [ref=e130]: 15:00
+          - generic [ref=e131]: 💻
+          - generic [ref=e132]: Work from the pod
+        - generic [ref=e133]:
+          - generic [ref=e134]: 19:00
+          - generic [ref=e135]: 🍲
+          - generic [ref=e136]: Cook & eat together
+        - generic [ref=e137]:
+          - generic [ref=e138]: 21:00
+          - generic [ref=e139]: 🌙
+          - generic [ref=e140]: Wind down at home
+    - generic [ref=e142]:
+      - generic [ref=e143]: How it works
+      - heading "From empty plot to village." [level=2] [ref=e144]
+      - generic [ref=e145]:
+        - generic [ref=e146]:
+          - generic [ref=e147]: "1"
+          - heading "Select a site" [level=4] [ref=e148]
+          - paragraph [ref=e149]: Find an underused, paved greyfield plot beside an established community.
+        - generic [ref=e150]:
+          - generic [ref=e151]: "2"
+          - heading "Green the site" [level=4] [ref=e152]
+          - paragraph [ref=e153]: Add planters, allotments, benches and artwork with local people.
+        - generic [ref=e154]:
+          - generic [ref=e155]: "3"
+          - heading "Engage community" [level=4] [ref=e156]
+          - paragraph [ref=e157]: Bring in water and power, plus shared kitchen, shower & laundry pods.
+        - generic [ref=e158]:
+          - generic [ref=e159]: "4"
+          - heading "Bring in tinyhomes" [level=4] [ref=e160]
+          - paragraph [ref=e161]: Roll the homes onto the site and adapt them to residents' needs.
+    - generic [ref=e163]:
+      - generic [ref=e164]: Built to a real standard
+      - heading "A small, reversible borough pilot." [level=2] [ref=e165]
+      - paragraph [ref=e166]: Light-touch homes need no foundations, sit on existing hard surfaces, and can be fully removed later. Designed to real safety, accessibility and London Plan standards — low cost, low risk, high public benefit.
+      - generic [ref=e167]:
+        - generic [ref=e168]:
+          - heading "♻️ Low-risk & reversible" [level=4] [ref=e169]:
+            - generic [ref=e170]: ♻️
+            - text: Low-risk & reversible
+          - list [ref=e171]:
+            - listitem [ref=e172]: No foundations, no permanent land loss
+            - listitem [ref=e173]: Sits on existing paved sites
+            - listitem [ref=e174]: Fully removable later
+        - generic [ref=e175]:
+          - heading "📐 Planning-ready" [level=4] [ref=e176]:
+            - generic [ref=e177]: 📐
+            - text: Planning-ready
+          - list [ref=e178]:
+            - listitem [ref=e179]: Tested against LSPBSL London Plan Guidance
+            - listitem [ref=e180]: Fire-safe, accessible, durable design
+            - listitem [ref=e181]: A clean, well-documented case study
+        - generic [ref=e182]:
+          - heading "🤝 Public benefit" [level=4] [ref=e183]:
+            - generic [ref=e184]: 🤝
+            - text: Public benefit
+          - list [ref=e185]:
+            - listitem [ref=e186]: Genuinely affordable, community-owned
+            - listitem [ref=e187]: Greened, safer underused sites
+            - listitem [ref=e188]: Grown from an existing neighbourhood
+    - generic [ref=e190]:
+      - generic [ref=e191]: Ownership
+      - heading "Owned by the community, forever." [level=2] [ref=e192]
+      - paragraph [ref=e193]: homefolk layers three proven models so homes stay genuinely affordable for generations — an approach championed by former UN housing rapporteur Prof. Raquel Rolnik.
+      - generic [ref=e194]:
+        - generic [ref=e195]:
+          - generic [ref=e196]: Community Land Trust
+          - heading "CLT" [level=4] [ref=e197]
+          - paragraph [ref=e198]: Separates the land from the building — residents pay only for the home, locking in affordability.
+        - generic [ref=e199]:
+          - generic [ref=e200]: Cooperative
+          - heading "COOP" [level=4] [ref=e201]
+          - paragraph [ref=e202]: Residents are shareholders with a secure right to live there for as long as they hold their share.
+        - generic [ref=e203]:
+          - generic [ref=e204]: Community Interest Company
+          - heading "CIC" [level=4] [ref=e205]
+          - paragraph [ref=e206]: A trusted company form that puts community benefit, not profit, first.
+      - generic [ref=e207]:
+        - generic [ref=e208]:
+          - generic [ref=e209]: St Clements · Tower Hamlets
+          - text: "London's first-ever CLT site: 252 new homes, 35% genuinely affordable, by and for local people."
+        - generic [ref=e210]:
+          - generic [ref=e211]: LILAC · Leeds
+          - text: A low-impact co-housing community of 20 straw-and-timber eco-homes around a shared common house.
+    - generic [ref=e213]:
+      - generic [ref=e214]: Voices
+      - blockquote [ref=e215]: “Living in a skip is a response to the frustration that the majority of my income went straight to rent.”
+      - generic [ref=e216]: Harrison Marshall · Skip House resident & architectural designer
+    - generic [ref=e218]:
+      - generic [ref=e219]: The journey
+      - heading "Concept today, homes by 2030." [level=2] [ref=e220]
+      - generic [ref=e221]:
+        - generic [ref=e222]:
+          - generic [ref=e224]: "2021"
+          - generic [ref=e225]: homefolk forms in response to London's housing crisis
+        - generic [ref=e226]:
+          - generic [ref=e228]: "2022"
+          - generic [ref=e229]: Becomes a Community Interest Company
+        - generic [ref=e230]:
+          - generic [ref=e232]: "2023"
+          - generic [ref=e233]: Partners with Sheffield (architecture), Glasgow (law) & Queen Mary (medicine)
+        - generic [ref=e234]:
+          - generic [ref=e236]: "2024"
+          - generic [ref=e237]: Sheffield Live Projects & Tower Hamlets site visit
+        - generic [ref=e238]:
+          - generic [ref=e240]: "2025"
+          - generic [ref=e241]: Pilot Urban Room & community engagement
+        - generic [ref=e242]:
+          - generic [ref=e244]: 2026–27
+          - generic [ref=e245]: Planning & council approval
+        - generic [ref=e246]:
+          - generic [ref=e248]: "2028"
+          - generic [ref=e249]: Construction of the pilot village begins
+        - generic [ref=e250]:
+          - generic [ref=e252]: "2030"
+          - generic [ref=e253]: Residents move in
+    - generic [ref=e255]:
+      - generic [ref=e256]:
+        - generic [ref=e257]: Try it yourself
+        - heading "Build your own village." [level=2] [ref=e258]
+        - paragraph [ref=e259]: Explore Hackney's real underused plots on the map, drop tiny-homes onto greyfield sites, then step inside to design the interior in 3D.
+        - button "🏠 Open the pod builder →" [ref=e261] [cursor=pointer]
+      - generic [ref=e262]:
+        - generic [ref=e263]: Map → place → design
+        - text: Powered by live OpenStreetMap data and street-level imagery — a playful way to picture a homefolk village on your own street.
+    - generic [ref=e265]:
+      - generic [ref=e266]: Why this is playable
+      - heading "Why play with the model?" [level=2] [ref=e267]
+      - paragraph [ref=e268]: Drag a home, choose a site, and test the trade-offs. The point is not to pretend housing is simple — it is to make the decisions visible.
+    - generic [ref=e270]:
+      - generic [ref=e271]: Questions worth sitting with
+      - heading "Play, then question." [level=2] [ref=e272]
+      - paragraph [ref=e273]: No right answers — just the things worth asking before a village like this could work near you.
+      - generic [ref=e274]:
+        - generic [ref=e275]:
+          - generic [ref=e276]: "?"
+          - generic [ref=e277]: Would your council approve this site?
+        - generic [ref=e278]:
+          - generic [ref=e279]: "?"
+          - generic [ref=e280]: Would neighbours see this as a threat or a benefit?
+        - generic [ref=e281]:
+          - generic [ref=e282]: "?"
+          - generic [ref=e283]: What should be measured after six months?
+    - generic [ref=e285]:
+      - generic [ref=e286]: Get involved
+      - heading "Discuss a borough pilot." [level=2] [ref=e287]
+      - paragraph [ref=e288]: A small, reversible pilot on underused council land — community-owned, planning-aware and built to remove cleanly. If that’s worth exploring for your borough, let’s talk.
+      - generic [ref=e289]:
+        - link "Explore a borough site conversation →" [ref=e290] [cursor=pointer]:
+          - /url: mailto:admin@homefolk.org.uk
+        - button "🔗 Share the project" [ref=e291] [cursor=pointer]
+    - generic [ref=e293]:
+      - generic [ref=e294]:
+        - generic [ref=e295]:
+          - img "homefolk" [ref=e296]
+          - paragraph [ref=e297]: Homefolk Housing UK CIC — a volunteer-led social enterprise.
+        - generic [ref=e298]:
+          - link "🌐 homefolk.org.uk" [ref=e299] [cursor=pointer]:
+            - /url: https://homefolk.org.uk
+            - generic [ref=e300]: 🌐
+            - text: homefolk.org.uk
+          - link "in homefolk" [ref=e301] [cursor=pointer]:
+            - /url: https://www.linkedin.com/company/homefolk
+            - generic [ref=e302]: in
+            - text: homefolk
+          - link "📷 homefolk_uk" [ref=e303] [cursor=pointer]:
+            - /url: https://instagram.com/homefolk_uk
+            - generic [ref=e304]: 📷
+            - text: homefolk_uk
+          - link "▶ homefolk_uk" [ref=e305] [cursor=pointer]:
+            - /url: https://youtube.com/@homefolk_uk
+            - generic [ref=e306]: ▶
+            - text: homefolk_uk
+      - generic [ref=e307]: "A concept demo — not finished housing. Stats cited from Trust for London, House of Commons Library, RIBA and Centre for London. Builder data: OpenStreetMap, Mapillary, Quaternius (CC0) & the Art Institute of Chicago."
+  - dialog "Housing, rebuilt one block at a time." [ref=e308]:
+    - generic [ref=e309]:
+      - img "homefolk" [ref=e311]
+      - generic [ref=e312]:
+        - text: Choose your route
+        - img [ref=e314]
+      - heading "Housing, rebuilt one block at a time." [level=2] [ref=e317]:
+        - text: Housing, rebuilt
+        - text: one block at a time.
+      - paragraph [ref=e318]: Same Homefolk story, three lenses. Pick the one that fits — the page reframes around you, and you can switch anytime.
+      - generic [ref=e319]:
+        - button "I'm a student New resident path Could you live here?" [ref=e320] [cursor=pointer]:
+          - img [ref=e322]
+          - generic [ref=e326]: I'm a student
+          - generic [ref=e327]: New resident path
+          - generic [ref=e328]: Could you live here?
+          - generic [ref=e329]: →
+        - button "I'm an academic / partner Researcher path A researched, measurable pilot." [ref=e330] [cursor=pointer]:
+          - img [ref=e332]
+          - generic [ref=e335]: I'm an academic / partner
+          - generic [ref=e336]: Researcher path
+          - generic [ref=e337]: A researched, measurable pilot.
+          - generic [ref=e338]: →
+        - button "I'm from a council Planning team path Low-risk, reversible borough pilot." [ref=e339] [cursor=pointer]:
+          - img [ref=e341]
+          - generic [ref=e344]: I'm from a council
+          - generic [ref=e345]: Planning team path
+          - generic [ref=e346]: Low-risk, reversible borough pilot.
+          - generic [ref=e347]: →
+      - button "I'm just curious — show me around →" [ref=e348] [cursor=pointer]

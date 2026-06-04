@@ -1,0 +1,65 @@
+- generic [active] [ref=e1]:
+  - img
+  - generic [ref=e2]:
+    - text: “”
+    - generic [ref=e349]:
+      - generic [ref=e350]:
+        - img [ref=e352]
+        - button "← Back to homefolk" [ref=e354] [cursor=pointer]
+        - generic [ref=e355]: build a village
+      - generic [ref=e356]:
+        - generic:
+          - generic [ref=e357]:
+            - button "Zoom in" [ref=e358] [cursor=pointer]: +
+            - button "Zoom out" [disabled] [ref=e359]: −
+          - generic [ref=e360]:
+            - link "Leaflet" [ref=e361] [cursor=pointer]:
+              - /url: https://leafletjs.com
+              - img [ref=e362]
+              - text: Leaflet
+            - text: "| © OpenStreetMap contributors © CARTO"
+      - generic [ref=e366]:
+        - heading "Drag a tiny-home onto a site" [level=3] [ref=e367]
+        - paragraph [ref=e368]: homefolk only builds on underused land. Drag the pod onto a highlighted plot.
+        - generic [ref=e369]:
+          - img [ref=e371]
+          - generic [ref=e373]:
+            - generic [ref=e374]: Tiny-home pod
+            - generic [ref=e375]: drag me to the map
+        - generic [ref=e376]: "Village: 0 pods placed"
+      - generic [ref=e377]:
+        - heading "Underused sites" [level=4] [ref=e378]
+        - generic [ref=e379]:
+          - text: Car park / greyfield
+          - generic [ref=e381]: –
+        - generic [ref=e382]:
+          - text: Brownfield
+          - generic [ref=e384]: –
+        - generic [ref=e385]:
+          - text: Garages
+          - generic [ref=e387]: –
+        - generic [ref=e388]:
+          - text: Unused construction
+          - generic [ref=e390]: –
+      - generic [ref=e391]: "Tip: drop several pods to grow a village, then click a pod to step inside & customise it."
+      - generic [ref=e392]:
+        - paragraph [ref=e393]: "Mission: build the lowest-risk borough pilot."
+        - generic [ref=e394]:
+          - generic [ref=e395]: "0"
+          - generic [ref=e396]: / 100
+          - generic [ref=e397]: Drop a pod to begin
+        - generic [ref=e398]:
+          - generic [ref=e399]: People housed
+          - generic [ref=e400]: "0"
+        - generic [ref=e401]:
+          - generic [ref=e402]: Homes placed
+          - generic [ref=e403]: "0"
+      - generic:
+        - generic:
+          - generic: Site
+          - button "close": ×
+        - paragraph
+        - paragraph
+      - generic [ref=e406]:
+        - text: Finding underused sites in Hackney…
+        - text: querying OpenStreetMap
