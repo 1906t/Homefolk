@@ -872,6 +872,7 @@ function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('sh
 
 function showScreen(name){
   App.screen=name;
+  try{ sessionStorage.setItem('hf_screen', name==='studio' ? 'map' : name); }catch(e){}
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   $('#'+(name==='map'?'map-screen':name)).classList.add('active');
 }
@@ -898,6 +899,12 @@ function siteAt(latlng){
 function openBuilder(){ showScreen('map'); initMap(); }
 ['#nav-builder','#hero-builder','#cta-builder'].forEach(sel=>{
   const el = $(sel); if(el) el.onclick = openBuilder;
+});
+
+/* restore the screen you were on across a refresh (studio normalized to map) */
+addEventListener('load', ()=>{
+  let s=null; try{ s=sessionStorage.getItem('hf_screen'); }catch(e){}
+  if(s==='map') openBuilder();
 });
 
 const reduceMotion = matchMedia('(prefers-reduced-motion:reduce)').matches;
@@ -1654,6 +1661,7 @@ if(location.hash==='#studio'){
   }
 
   function choose(mode){
+    try{ sessionStorage.setItem('hf_gw_seen','1'); }catch(e){}
     if(mode==='default'){ try{ localStorage.removeItem(KEY); }catch(e){} }
     else { try{ localStorage.setItem(KEY, mode); }catch(e){} }
     applyAudience(mode);
@@ -1700,7 +1708,11 @@ if(location.hash==='#studio'){
   } else {
     renderPrompts('default');   // populate the band under the still-default landing
   }
-  openGateway();
+  // only auto-open the doorway if it hasn't been dismissed in THIS tab session;
+  // sessionStorage clears on reopen, so a fresh visit always sees the 3 blocks
+  var seen = false;
+  try{ seen = sessionStorage.getItem('hf_gw_seen')==='1'; }catch(e){}
+  if(!seen) openGateway();
 })();
 </script>
 </body>
