@@ -342,7 +342,8 @@ button{font-family:inherit}
 .vscore .pair{display:flex;justify-content:space-between;gap:8px;margin:6px 0}
 .vscore .pair .k{color:var(--ink-soft)}
 .vscore .pair .v{font-weight:700;font-variant-numeric:tabular-nums}
-.vscore #v-bars{margin-top:10px}
+.vscore #v-bars{display:grid;grid-template-columns:1fr 1fr;gap:9px 10px;margin-top:10px}
+.vscore #v-bars .mbar+.mbar{margin-top:0}
 
 /* metric bar — shared by site card + village panel */
 .mbar{font-size:11px}
@@ -1252,21 +1253,19 @@ function updateVillageScore(){
   $('#v-score').textContent = score;
   $('#v-verb').textContent  = score>=75?'Strong pilot' : score>=55?'Solid start' : score>=35?'Getting there' : 'Early days';
   $('#v-bars').innerHTML = [
-    metricBar('Avg liveability', dims.live,     { display:Math.round(dims.live) }),
-    metricBar('Carbon benefit',  dims.carb,     { display:qual(dims.carb) }),
-    metricBar('Community score', dims.comm,     { display:Math.round(dims.comm) }),
-    metricBar('Planning risk',   dims.planRisk, { tone:'risk', display:qual(dims.planRisk) }),
+    metricBar('Liveability',   dims.live,     { display:Math.round(dims.live) }),
+    metricBar('Carbon',        dims.carb,     { display:qual(dims.carb) }),
+    metricBar('Community',     dims.comm,     { display:Math.round(dims.comm) }),
+    metricBar('Planning risk', dims.planRisk, { tone:'risk', display:qual(dims.planRisk) }),
   ].join('');
 }
 
 /* ---- called after each pod lands ---- */
 function onPodPlaced(pod){
+  // keep the post-drop screen calm: just the running score + a punchy toast.
+  // the full 6-bar site card is reserved for clicking a plot to inspect it.
   updateVillageScore();
-  const fb = podFeedback(pod.type);
-  showSiteCard(pod.type,
-    'Pod placed on '+(SITE_STYLE[pod.type]?.label||pod.type)+'. '+fb
-    +' <br><span style="color:var(--ink-soft)">Click the pod to step inside &amp; customise it.</span>');
-  toast(fb.replace(/<\/?b>/g,''));
+  toast(podFeedback(pod.type).replace(/<\/?b>/g,''));
   if(App.pods.length===PILOT_TARGET) setTimeout(showPilotResult, 650);
 }
 
