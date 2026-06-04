@@ -1328,7 +1328,44 @@ async function fetchOverpass(query){
     return await Promise.any(OVERPASS_EPS.map(ep=>fetchOverpassFrom(ep,query)));
   }catch(e){ /* every mirror failed */ return null; }
 }
+// Sites are baked into a static local file (hackney-sites.json) so the highlighted plots
+// always load instantly with zero network dependency. The live Overpass API is frequently
+// rate-limited (429) or slow and was failing in demos. This is real Hackney OpenStreetMap
+// data, just snapshotted — and shipping it static also cuts the carbon of repeated API calls.
 async function loadSites(){
+  try{
+    const r = await fetch('hackney-sites.json', {cache:'force-cache'});
+    if(r.ok){
+      const arr = await r.json();
+      if(Array.isArray(arr) && arr.length){
+        renderLocalSites(arr);
+        $('#map-overlay').classList.add('hidden');
+        return;
+      }
+    }
+  }catch(e){ /* fall through to the live API */ }
+  loadSitesLive();
+}
+
+// pre-baked sites file shape: [{ t:type, r:[[lat,lon], ...] }, ...]
+function renderLocalSites(arr){
+  for(const s of arr){
+    const type = s.t, ring = s.r;
+    if(!SITE_STYLE[type] || !ring || ring.length<3) continue;
+    App.sites.push({type, ring});
+    siteCounts[type]++;
+    const st = SITE_STYLE[type];
+    L.polygon(ring,{ color:st.color, weight:1.6, fillColor:st.color, fillOpacity:.6,
+      interactive:false }).addTo(App.sitesLayer);
+  }
+  $('#c-parking').textContent=siteCounts.parking;
+  $('#c-brownfield').textContent=siteCounts.brownfield;
+  $('#c-garages').textContent=siteCounts.garages;
+  $('#c-construction').textContent=siteCounts.construction;
+}
+
+// fallback: query the live Overpass API directly (used only if the static file is missing)
+async function loadSitesLive(){
   const bbox = `${HACKNEY.s},${HACKNEY.w},${HACKNEY.n},${HACKNEY.e}`;
   // Two requests only (concurrency of 4 gets rate-limited by community endpoints).
   // `building=garage` is deliberately excluded — matching every individual lock-up
